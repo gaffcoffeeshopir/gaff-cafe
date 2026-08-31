@@ -371,12 +371,14 @@ body.is-ready .slogan {
 }
 
 .logo {
-  --logo-shift-x: clamp(-22px, -5.5vw, -12px);
+  /* کمی چپ برای جبران شاخه، ولی نه زیاد */
+  --logo-shift-x: clamp(-14px, -3.2vw, -8px);
   display: block;
   width: min(280px, 78vw);
   max-width: 100%;
   height: auto;
   margin-inline: auto;
+  margin-bottom: -0.55rem;
   object-fit: contain;
   opacity: 0;
   transform: translateX(var(--logo-shift-x)) translateY(18px) scale(0.92);
@@ -439,7 +441,10 @@ body.is-ready .header-tag {
 }
 
 .header-ornament {
-  margin-top: 0.85rem;
+  /* همان شیفت افقی لوگو تا نوک لوگو و لوزی روی یک خط عمودی باشند */
+  --logo-shift-x: clamp(-14px, -3.2vw, -8px);
+  margin-top: 0;
+  transform: translateX(var(--logo-shift-x));
 }
 
 /* —— Category nav —— */
@@ -1518,7 +1523,7 @@ a.footer-link:hover {
     transform: translateX(var(--logo-shift-x, 0px)) translateY(0) scale(1);
   }
   50% {
-    transform: translateX(var(--logo-shift-x, 0px)) translateY(-6px) scale(1);
+    transform: translateX(var(--logo-shift-x, 0px)) translateY(-2px) scale(1);
   }
 }
 
