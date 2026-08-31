@@ -1,10 +1,10 @@
 {
   "categories": [
-    { "id": "hot-bar", "name": "بار گرم", "icon": "img/icons/hot-bar.png" },
-    { "id": "tea", "name": "چای و دمنوش‌ها", "icon": "img/icons/tea.png" },
-    { "id": "cold-bar", "name": "بار سرد", "icon": "img/icons/cold-bar.png" },
-    { "id": "breakfast", "name": "صبحانه‌ها", "icon": "img/icons/breakfast.png" },
-    { "id": "shakes", "name": "شیک‌ها", "icon": "img/icons/shakes.png" }
+    { "id": "hot-bar", "name": "بار گرم", "icon": "img/icons/hot-bar.svg" },
+    { "id": "tea", "name": "چای و دمنوش‌ها", "icon": "img/icons/tea.svg" },
+    { "id": "cold-bar", "name": "بار سرد", "icon": "img/icons/cold-bar.svg" },
+    { "id": "breakfast", "name": "صبحانه‌ها", "icon": "img/icons/breakfast.svg" },
+    { "id": "shakes", "name": "شیک‌ها", "icon": "img/icons/shakes.svg" }
   ],
   "items": [
     {

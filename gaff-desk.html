@@ -49,6 +49,31 @@
         <p class="admin-cats-hint" aria-hidden="true">بکشید ← → همه دسته‌ها</p>
       </div>
 
+      <details class="admin-card admin-add" id="catPanel">
+        <summary class="admin-add-summary">
+          <span>+ افزودن دسته‌بندی</span>
+        </summary>
+        <form class="admin-form" id="catForm">
+          <label class="field">
+            <span>نام دسته</span>
+            <input type="text" id="catName" required placeholder="مثلاً اسموتی‌ها" />
+          </label>
+
+          <p class="field-label">استیکر دسته</p>
+          <div class="sticker-pick" id="stickerPick" role="radiogroup" aria-label="انتخاب استیکر"></div>
+          <input type="hidden" id="catIcon" />
+
+          <label class="sticker-upload">
+            <input type="file" id="stickerFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden />
+            <span class="sticker-upload-btn">آپلود استیکر جدید</span>
+            <span class="sticker-upload-hint">PNG، SVG، WebP یا JPG</span>
+          </label>
+
+          <button type="submit" class="btn-primary admin-full-btn">ثبت دسته‌بندی</button>
+          <p class="admin-hint" id="catHint" hidden></p>
+        </form>
+      </details>
+
       <details class="admin-card admin-add" id="addPanel">
         <summary class="admin-add-summary">
           <span>+ افزودن محصول جدید</span>

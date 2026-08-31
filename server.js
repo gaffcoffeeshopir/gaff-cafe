@@ -33,7 +33,35 @@ const sessions = new Map();
 const app = express();
 const root = __dirname;
 
-app.use(express.json({ limit: "512kb" }));
+app.use(express.json({ limit: "3mb" }));
+
+const ICONS_DIR = path.join(__dirname, "img", "icons");
+const ALLOWED_STICKER_EXT = new Set([".svg", ".png", ".webp", ".jpg", ".jpeg"]);
+
+function listStickers() {
+  if (!fs.existsSync(ICONS_DIR)) return [];
+  return fs
+    .readdirSync(ICONS_DIR)
+    .filter((name) => ALLOWED_STICKER_EXT.has(path.extname(name).toLowerCase()))
+    .sort()
+    .map((name) => ({
+      file: name,
+      path: "img/icons/" + name,
+    }));
+}
+
+function isSafeIconPath(iconPath) {
+  const normalized = String(iconPath || "").replace(/\\/g, "/").trim();
+  if (!normalized.startsWith("img/icons/")) return false;
+  if (normalized.includes("..")) return false;
+  const abs = path.resolve(__dirname, normalized);
+  const iconsRoot = path.resolve(ICONS_DIR);
+  const prefix = iconsRoot.endsWith(path.sep) ? iconsRoot : iconsRoot + path.sep;
+  if (!abs.toLowerCase().startsWith(prefix.toLowerCase()) && abs.toLowerCase() !== iconsRoot.toLowerCase()) {
+    return false;
+  }
+  return fs.existsSync(abs);
+}
 
 function readMenu() {
   const raw = fs.readFileSync(MENU_PATH, "utf8");
@@ -176,6 +204,104 @@ app.get("/api/admin/menu", requireAdmin, (_req, res) => {
     res.json(readMenu());
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/admin/stickers", requireAdmin, (_req, res) => {
+  try {
+    res.json({ ok: true, stickers: listStickers() });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post("/api/admin/stickers", requireAdmin, (req, res) => {
+  try {
+    const nameRaw = String((req.body && req.body.name) || "sticker").trim();
+    const dataUrl = String((req.body && req.body.data) || "");
+    const match = /^data:image\/(png|jpeg|jpg|webp|svg\+xml);base64,(.+)$/i.exec(dataUrl);
+    if (!match) {
+      return res.status(400).json({ ok: false, error: "فایل استیکر نامعتبر است" });
+    }
+
+    let ext = match[1].toLowerCase();
+    if (ext === "jpeg") ext = "jpg";
+    if (ext === "svg+xml") ext = "svg";
+
+    const safeBase =
+      nameRaw
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^\w\u0600-\u06FF-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 40) || "sticker";
+
+    fs.mkdirSync(ICONS_DIR, { recursive: true });
+    const file = `${safeBase}-${Date.now().toString(36).slice(-5)}.${ext}`;
+    const abs = path.join(ICONS_DIR, file);
+    fs.writeFileSync(abs, Buffer.from(match[2], "base64"));
+
+    const iconPath = "img/icons/" + file;
+    res.json({ ok: true, sticker: { file, path: iconPath } });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post("/api/admin/categories", requireAdmin, (req, res) => {
+  try {
+    const menu = readMenu();
+    const name = String((req.body && req.body.name) || "").trim();
+    const icon = String((req.body && req.body.icon) || "").trim().replace(/\\/g, "/");
+
+    if (!name) return res.status(400).json({ ok: false, error: "نام دسته‌بندی لازم است" });
+    if (!isSafeIconPath(icon)) {
+      return res.status(400).json({ ok: false, error: "استیکر معتبر انتخاب کنید" });
+    }
+    if (menu.categories.some((c) => c.name === name)) {
+      return res.status(400).json({ ok: false, error: "این نام دسته از قبل وجود دارد" });
+    }
+
+    let id = slugifyId(name).replace(/-\w+$/, "");
+    if (!id || id === "item") id = "cat";
+    id = id.slice(0, 32);
+    let unique = id;
+    let n = 2;
+    while (menu.categories.some((c) => c.id === unique)) {
+      unique = id + "-" + n;
+      n += 1;
+    }
+
+    const category = { id: unique, name, icon };
+    menu.categories.push(category);
+    writeMenu(menu);
+    res.json({ ok: true, category });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete("/api/admin/categories/:id", requireAdmin, (req, res) => {
+  try {
+    const menu = readMenu();
+    const id = req.params.id;
+    const cat = menu.categories.find((c) => c.id === id);
+    if (!cat) return res.status(404).json({ ok: false, error: "دسته پیدا نشد" });
+
+    const used = menu.items.some((i) => i.categoryId === id);
+    if (used) {
+      return res.status(400).json({
+        ok: false,
+        error: "اول محصولات این دسته را حذف یا جابه‌جا کنید",
+      });
+    }
+
+    menu.categories = menu.categories.filter((c) => c.id !== id);
+    writeMenu(menu);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
   }
 });
 
