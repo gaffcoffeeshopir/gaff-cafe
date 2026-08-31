@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR منو | کافه گاف</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Vazirmatn:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="qr-page">
+    <div class="bg-texture" aria-hidden="true"></div>
+
+    <main class="qr-card">
+      <p class="slogan">قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی ;)</p>
+      <img
+        class="logo logo-qr"
+        src="img/logo.png?v=2"
+        alt="کافه گاف — GAFF"
+        width="220"
+        height="270"
+      />
+      <h1>منوی دیجیتال</h1>
+      <p class="qr-lead">اسکن کنید و سفارش دهید</p>
+      <div class="qr-box" id="qrBox"></div>
+      <p class="qr-url" id="qrUrl"></p>
+      <p class="hint print-hide">این صفحه را چاپ کنید و روی میز بگذارید. بعد از آپلود سایت، آدرس واقعی خودکار در QR قرار می‌گیرد.</p>
+      <div class="qr-links print-hide">
+        <a href="index.html">باز کردن منو</a>
+        <a href="staff.html">پنل سفارش‌ها</a>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="js/qr.js"></script>
+  </body>
+</html>

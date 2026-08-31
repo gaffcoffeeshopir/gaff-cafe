@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#8fa37a" />
+    <meta name="description" content="کافه گاف — منوی دیجیتال و سفارش" />
+    <title>کافه گاف | GAFF</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Vazirmatn:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="bg-texture" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <p class="slogan">قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی ;)</p>
+      <div class="brand">
+        <img
+          class="logo"
+          src="img/logo.png?v=2"
+          alt="کافه گاف — GAFF Coffee with a good mood"
+          width="280"
+          height="340"
+        />
+      </div>
+      <div class="ornament header-ornament" aria-hidden="true">
+        <span></span><i></i><span></span>
+      </div>
+      <p class="header-tag">منو را ورق بزن · سفارشت را ثبت کن</p>
+    </header>
+
+    <nav class="cat-nav" id="catNav" aria-label="دسته‌بندی منو"></nav>
+
+    <main class="menu" id="menu"></main>
+
+    <footer class="site-footer" id="siteFooter">
+      <p class="footer-brand">GAFF</p>
+      <p class="footer-tag">Slow Coffee · Good Times</p>
+      <div class="ornament footer-ornament" aria-hidden="true">
+        <span></span><i></i><span></span>
+      </div>
+      <ul class="footer-contacts" id="footerContacts"></ul>
+      <p class="footer-dev" id="footerDev"></p>
+      <p class="footer-copy">EST. 2026 · کافه گاف</p>
+    </footer>
+
+    <button type="button" class="cart-fab" id="cartFab" hidden aria-label="سبد سفارش">
+      <span class="cart-fab-count" id="cartCount">0</span>
+      <span>سبد سفارش</span>
+      <span class="cart-fab-total" id="cartFabTotal"></span>
+    </button>
+
+    <div class="drawer-overlay" id="drawerOverlay" hidden></div>
+    <aside class="drawer" id="cartDrawer" aria-hidden="true" aria-label="سبد سفارش">
+      <div class="drawer-head">
+        <h2>سفارش شما</h2>
+        <button type="button" class="icon-btn" id="closeCart" aria-label="بستن">×</button>
+      </div>
+      <div class="drawer-body" id="cartLines"></div>
+      <div class="drawer-foot">
+        <label class="field">
+          <span>شماره میز</span>
+          <input type="text" id="tableNumber" inputmode="numeric" placeholder="مثلاً ۴" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>توضیحات (اختیاری)</span>
+          <textarea id="orderNote" rows="2" placeholder="بدون شکر، کم‌شیر، ..."></textarea>
+        </label>
+        <div class="total-row">
+          <span>جمع</span>
+          <strong id="cartTotal">۰ تومان</strong>
+        </div>
+        <button type="button" class="btn-primary" id="submitOrder">ثبت سفارش</button>
+        <p class="hint">شماره میز را درست وارد کنید. سفارش مستقیم برای کافه ارسال می‌شود.</p>
+      </div>
+    </aside>
+
+    <div class="toast" id="toast" hidden role="status"></div>
+
+    <dialog class="modal" id="optionModal">
+      <form method="dialog" class="modal-card" id="optionForm">
+        <h3 id="optionTitle"></h3>
+        <div id="optionList"></div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary" value="add">افزودن به سبد</button>
+          <button type="submit" class="btn-ghost" value="cancel">انصراف</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="confirmModal">
+      <div class="modal-card confirm-card">
+        <p class="confirm-eyebrow">گاف · سفارش شما رسید</p>
+        <h3 class="confirm-title">ممنون که گاف را انتخاب کردید</h3>
+        <p class="confirm-message" id="confirmMessage"></p>
+        <p class="confirm-code" id="confirmCode">G-42</p>
+        <p class="confirm-meta" id="confirmMeta"></p>
+        <p class="confirm-status" id="confirmStatus" hidden></p>
+        <div class="confirm-actions">
+          <button type="button" class="btn-primary" id="closeConfirm">باشه، منتظر می‌مانم</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="js/menu-data.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

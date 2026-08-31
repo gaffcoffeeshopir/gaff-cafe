@@ -1,0 +1,22 @@
+{
+  "name": "gaff",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Digital menu for GAFF cafe with Telegram order bot",
+  "main": "server.js",
+  "scripts": {
+    "server": "node server.js",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "https-proxy-agent": "^9.1.0"
+  }
+}

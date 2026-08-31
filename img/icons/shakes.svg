@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- شیک — لیوان شیک با خامه -->
+  <defs>
+    <linearGradient id="shakeGlass" x1="40" y1="20" x2="85" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7fbff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#c5d5e0" stop-opacity="0.75"/>
+    </linearGradient>
+    <linearGradient id="shake" x1="45" y1="50" x2="80" y2="105" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f3e2c4"/>
+      <stop offset="1" stop-color="#d4b48a"/>
+    </linearGradient>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="1.5" dy="2.5" stdDeviation="1.8" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <g filter="url(#s)">
+    <ellipse cx="58" cy="110" rx="26" ry="5" fill="#1a2218" opacity="0.12"/>
+    <!-- glass -->
+    <path d="M42 48h36l-5 52c0 5-5 8-13 8h-0c-8 0-13-3-13-8l-5-52z" fill="url(#shakeGlass)" stroke="#1a2218" stroke-width="2.2"/>
+    <path d="M46 58h28l-3.5 40c0 3-3 5-8 5h0c-5 0-8-2-8-5L46 58z" fill="url(#shake)"/>
+    <!-- whipped cream -->
+    <path d="M44 50c0-14 8-22 16-22s14 6 16 14c6-2 12 4 8 12-2 4-8 6-14 4-2 6-10 8-16 4-6-4-10-8-10-12z" fill="#fffef8" stroke="#1a2218" stroke-width="1.8"/>
+    <circle cx="52" cy="40" r="5" fill="#fff" stroke="#1a2218" stroke-width="1"/>
+    <circle cx="64" cy="36" r="6" fill="#fffef8" stroke="#1a2218" stroke-width="1"/>
+    <circle cx="70" cy="46" r="4.5" fill="#fff" stroke="#1a2218" stroke-width="1"/>
+    <!-- cherry -->
+    <circle cx="60" cy="30" r="5" fill="#c23b3b" stroke="#1a2218" stroke-width="1.3"/>
+    <path d="M60 25c2-6 8-8 10-6" fill="none" stroke="#2f5c28" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- straw -->
+    <path d="M74 18l6 70" stroke="#e87a8a" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M74 18l6 70" stroke="#1a2218" stroke-width="1.1" opacity="0.3"/>
+  </g>
+</svg>

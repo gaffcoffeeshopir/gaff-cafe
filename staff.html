@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#8fa37a" />
+    <title>سفارش‌ها | کافه گاف</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Vazirmatn:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="staff-page">
+    <div class="bg-texture" aria-hidden="true"></div>
+
+    <header class="staff-header">
+      <a href="index.html" class="staff-brand">GAFF</a>
+      <h1>سفارش‌های زنده</h1>
+      <div class="staff-actions">
+        <button type="button" class="btn-ghost" id="clearDone">پاک کردن انجام‌شده‌ها</button>
+        <a href="qr.html" class="btn-ghost">QR منو</a>
+      </div>
+    </header>
+
+    <main class="orders" id="orders">
+      <p class="empty-state" id="emptyOrders">هنوز سفارشی ثبت نشده.</p>
+    </main>
+
+    <script src="js/menu-data.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/staff.js"></script>
+  </body>
+</html>
