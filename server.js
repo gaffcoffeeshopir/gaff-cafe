@@ -19,6 +19,11 @@ const PORT = Number(process.env.PORT) || 5173;
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "gaff1405";
+const PUBLIC_BASE_URL = String(
+  process.env.PUBLIC_BASE_URL || "https://gaff-cafe.onrender.com"
+).replace(/\/$/, "");
+const SITE_URL = PUBLIC_BASE_URL + "/";
+const ADMIN_URL = PUBLIC_BASE_URL + "/gaff-desk";
 const PROXY_URL =
   process.env.HTTPS_PROXY ||
   process.env.HTTP_PROXY ||
@@ -171,11 +176,82 @@ function telegramApi(method, body) {
   });
 }
 
+function botLinksKeyboard() {
+  return {
+    inline_keyboard: [
+      [{ text: "☕ منوی کافه گاف", url: SITE_URL }],
+      [{ text: "🛠 پنل مدیریت", url: ADMIN_URL }],
+    ],
+  };
+}
+
+function botWelcomeText() {
+  return (
+    "به ربات کافه گاف خوش آمدید ☕\n\n" +
+    "از دکمه‌های زیر وارد منوی دیجیتال یا پنل مدیریت شوید.\n" +
+    "ورود به پنل مدیریت نیاز به رمز دارد."
+  );
+}
+
+async function handleTelegramUpdate(update) {
+  const msg = update && (update.message || update.edited_message);
+  if (!msg || !msg.chat || !msg.text) return;
+
+  const text = String(msg.text).trim();
+  const chatId = msg.chat.id;
+  const cmd = text.split(/\s+/)[0].split("@")[0].toLowerCase();
+
+  if (cmd === "/start" || cmd === "/menu" || cmd === "/admin" || cmd === "/links") {
+    await telegramApi("sendMessage", {
+      chat_id: chatId,
+      text: botWelcomeText(),
+      reply_markup: botLinksKeyboard(),
+      disable_web_page_preview: true,
+    });
+  }
+}
+
+async function setupTelegramBot() {
+  if (!BOT_TOKEN) return;
+
+  try {
+    await telegramApi("setMyCommands", {
+      commands: [
+        { command: "start", description: "شروع و لینک‌های گاف" },
+        { command: "menu", description: "منوی دیجیتال کافه" },
+        { command: "admin", description: "پنل مدیریت منو" },
+        { command: "links", description: "نمایش لینک‌ها" },
+      ],
+    });
+    console.log("Telegram commands: OK");
+  } catch (err) {
+    console.error("Telegram setMyCommands:", err.message);
+  }
+
+  if (!PUBLIC_BASE_URL.startsWith("https://")) {
+    console.log("Telegram webhook: skipped (PUBLIC_BASE_URL must be https)");
+    return;
+  }
+
+  try {
+    await telegramApi("setWebhook", {
+      url: PUBLIC_BASE_URL + "/api/telegram/webhook",
+      allowed_updates: ["message"],
+      drop_pending_updates: false,
+    });
+    console.log("Telegram webhook:", PUBLIC_BASE_URL + "/api/telegram/webhook");
+  } catch (err) {
+    console.error("Telegram setWebhook:", err.message);
+  }
+}
+
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
     botConfigured: Boolean(BOT_TOKEN),
     chatConfigured: Boolean(CHAT_ID),
+    publicUrl: PUBLIC_BASE_URL,
+    adminUrl: ADMIN_URL,
   });
 });
 
@@ -406,6 +482,30 @@ app.delete("/api/admin/items/:id", requireAdmin, (req, res) => {
   }
 });
 
+app.post("/api/telegram/webhook", async (req, res) => {
+  try {
+    await handleTelegramUpdate(req.body || {});
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("[telegram webhook]", err.message);
+    res.json({ ok: true });
+  }
+});
+
+app.post("/api/telegram/setup", async (_req, res) => {
+  try {
+    await setupTelegramBot();
+    res.json({
+      ok: true,
+      siteUrl: SITE_URL,
+      adminUrl: ADMIN_URL,
+      webhook: PUBLIC_BASE_URL + "/api/telegram/webhook",
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.get("/api/telegram/chat-id", async (_req, res) => {
   try {
     const updates = await telegramApi("getUpdates", { limit: 20 });
@@ -480,6 +580,8 @@ app.get("*", (req, res, next) => {
 app.listen(PORT, () => {
   console.log(`GAFF running at http://localhost:${PORT}`);
   console.log(`Admin desk: http://localhost:${PORT}/gaff-desk`);
+  console.log(`Public site: ${SITE_URL}`);
+  console.log(`Public admin: ${ADMIN_URL}`);
   console.log(
     BOT_TOKEN
       ? "Telegram bot token: OK"
@@ -491,4 +593,7 @@ app.listen(PORT, () => {
       : "Telegram chat id: MISSING"
   );
   console.log(PROXY_URL ? `Proxy: ${PROXY_URL}` : "Proxy: none");
+  setupTelegramBot().catch((err) => {
+    console.error("Telegram setup failed:", err.message);
+  });
 });
