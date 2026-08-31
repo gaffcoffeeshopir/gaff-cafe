@@ -371,6 +371,7 @@ body.is-ready .slogan {
 }
 
 .logo {
+  --logo-shift-x: clamp(-22px, -5.5vw, -12px);
   display: block;
   width: min(280px, 78vw);
   max-width: 100%;
@@ -378,7 +379,7 @@ body.is-ready .slogan {
   margin-inline: auto;
   object-fit: contain;
   opacity: 0;
-  transform: translateY(18px) scale(0.92);
+  transform: translateX(var(--logo-shift-x)) translateY(18px) scale(0.92);
   filter: drop-shadow(0 10px 28px rgba(26, 34, 24, 0.2));
   transition:
     opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
@@ -387,7 +388,7 @@ body.is-ready .slogan {
 
 body.is-ready .logo {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateX(var(--logo-shift-x)) translateY(0) scale(1);
   animation: logo-float 5.5s ease-in-out 1.1s infinite;
 }
 
@@ -1514,10 +1515,10 @@ a.footer-link:hover {
 @keyframes logo-float {
   0%,
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateX(var(--logo-shift-x, 0px)) translateY(0) scale(1);
   }
   50% {
-    transform: translateY(-6px) scale(1);
+    transform: translateX(var(--logo-shift-x, 0px)) translateY(-6px) scale(1);
   }
 }
 
