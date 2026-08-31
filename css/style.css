@@ -57,11 +57,12 @@ body::-webkit-scrollbar {
 /* —— ریل اسکرول برند گاف —— */
 .gaff-rail {
   --rail-x: max(0.35rem, env(safe-area-inset-left, 0px));
+  --rail-thumb-w: 12px;
   position: fixed;
   top: 12vh;
   bottom: 13vh;
   left: var(--rail-x);
-  width: 14px;
+  width: 16px;
   z-index: 45;
   display: grid;
   place-items: center;
@@ -146,8 +147,8 @@ body::-webkit-scrollbar {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 10px;
-  height: 28px;
+  width: var(--rail-thumb-w);
+  height: 32px;
   margin: 0;
   padding: 0;
   border: none;
@@ -161,14 +162,13 @@ body::-webkit-scrollbar {
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -1px 3px rgba(26, 34, 24, 0.16);
   transform: translate3d(-50%, 0, 0);
-  transition: box-shadow 0.25s ease, width 0.2s ease;
+  transition: box-shadow 0.25s ease;
   touch-action: none;
   will-change: transform;
 }
 
 .gaff-rail.is-active .gaff-rail-thumb,
 .gaff-rail:hover .gaff-rail-thumb {
-  width: 11px;
   box-shadow:
     0 3px 10px rgba(26, 34, 24, 0.28),
     0 0 0 2px rgba(197, 209, 180, 0.4),
@@ -177,7 +177,6 @@ body::-webkit-scrollbar {
 
 .gaff-rail.is-dragging .gaff-rail-thumb {
   cursor: grabbing;
-  width: 11px;
 }
 
 .gaff-rail-bean {
@@ -251,16 +250,8 @@ body::-webkit-scrollbar {
 }
 
 @media (hover: none) {
-  .gaff-rail {
-    width: 12px;
-  }
-
-  .gaff-rail-thumb {
-    width: 9px;
-  }
-
   .gaff-rail.is-needed.is-visible {
-    opacity: 0.72;
+    opacity: 0.85;
   }
 }
 

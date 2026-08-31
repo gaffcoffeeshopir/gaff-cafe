@@ -2,7 +2,7 @@
  * ریل اسکرول برند گاف — جایگزین نوار پیش‌فرض مرورگر
  */
 (function () {
-  const MIN_THUMB = 24;
+  const MIN_THUMB = 28;
   const MAX_THUMB = 40;
   const IDLE_MS = 1400;
 
