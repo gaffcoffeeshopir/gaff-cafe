@@ -378,7 +378,7 @@ body.is-ready .slogan {
   max-width: 100%;
   height: auto;
   margin-inline: auto;
-  margin-bottom: -0.55rem;
+  margin-bottom: 0;
   object-fit: contain;
   opacity: 0;
   transform: translateX(var(--logo-shift-x)) translateY(18px) scale(0.92);
@@ -1523,7 +1523,8 @@ a.footer-link:hover {
     transform: translateX(var(--logo-shift-x, 0px)) translateY(0) scale(1);
   }
   50% {
-    transform: translateX(var(--logo-shift-x, 0px)) translateY(-2px) scale(1);
+    /* حرکت عمودی خیلی کم تا هم‌ترازی افقی با لوزی حفظ شود */
+    transform: translateX(var(--logo-shift-x, 0px)) translateY(-1px) scale(1);
   }
 }
 
