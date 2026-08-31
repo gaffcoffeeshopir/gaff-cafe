@@ -35,11 +35,13 @@ html::-webkit-scrollbar {
 }
 
 body {
+  --page-bg: #b7c3a4;
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-fa);
   color: var(--ink);
-  background: linear-gradient(165deg, #b7c3a4 0%, var(--paper) 45%, #a8b894 100%);
+  background: var(--page-bg);
+  background-attachment: fixed;
   line-height: 1.6;
   padding-bottom: 5.5rem;
   padding-left: max(0.85rem, env(safe-area-inset-left, 0px));
@@ -54,12 +56,12 @@ body::-webkit-scrollbar {
 
 /* —— ریل اسکرول برند گاف —— */
 .gaff-rail {
-  --rail-x: max(0.4rem, env(safe-area-inset-left, 0px));
+  --rail-x: max(0.35rem, env(safe-area-inset-left, 0px));
   position: fixed;
-  top: 11vh;
-  bottom: 12vh;
+  top: 12vh;
+  bottom: 13vh;
   left: var(--rail-x);
-  width: 22px;
+  width: 14px;
   z-index: 45;
   display: grid;
   place-items: center;
@@ -84,16 +86,16 @@ body::-webkit-scrollbar {
 
 .gaff-rail-glow {
   position: absolute;
-  inset: -8% -10px;
-  background: radial-gradient(ellipse at 30% 50%, rgba(242, 245, 235, 0.55), transparent 68%);
-  filter: blur(6px);
-  opacity: 0.7;
+  inset: -4% -4px;
+  background: radial-gradient(ellipse at 30% 50%, rgba(242, 245, 235, 0.28), transparent 70%);
+  filter: blur(4px);
+  opacity: 0.55;
   pointer-events: none;
 }
 
 .gaff-rail-track {
   position: relative;
-  width: 4px;
+  width: 3px;
   height: 100%;
   border-radius: 999px;
   background:
@@ -115,9 +117,9 @@ body::-webkit-scrollbar {
 .gaff-rail-dot {
   position: absolute;
   left: 50%;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
   border-radius: 50%;
   background: rgba(242, 245, 235, 0.85);
   box-shadow: 0 0 0 1px rgba(26, 34, 24, 0.12);
@@ -144,8 +146,8 @@ body::-webkit-scrollbar {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 16px;
-  height: 44px;
+  width: 10px;
+  height: 28px;
   margin: 0;
   padding: 0;
   border: none;
@@ -155,9 +157,9 @@ body::-webkit-scrollbar {
   background:
     linear-gradient(160deg, #d7e1c8 0%, var(--sage) 42%, var(--sage-deep) 100%);
   box-shadow:
-    0 4px 14px rgba(26, 34, 24, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(26, 34, 24, 0.18);
+    0 2px 8px rgba(26, 34, 24, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 3px rgba(26, 34, 24, 0.16);
   transform: translate3d(-50%, 0, 0);
   transition: box-shadow 0.25s ease, width 0.2s ease;
   touch-action: none;
@@ -166,16 +168,16 @@ body::-webkit-scrollbar {
 
 .gaff-rail.is-active .gaff-rail-thumb,
 .gaff-rail:hover .gaff-rail-thumb {
-  width: 18px;
+  width: 11px;
   box-shadow:
-    0 6px 20px rgba(26, 34, 24, 0.32),
-    0 0 0 3px rgba(197, 209, 180, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 3px 10px rgba(26, 34, 24, 0.28),
+    0 0 0 2px rgba(197, 209, 180, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .gaff-rail.is-dragging .gaff-rail-thumb {
   cursor: grabbing;
-  width: 18px;
+  width: 11px;
 }
 
 .gaff-rail-bean {
@@ -250,11 +252,11 @@ body::-webkit-scrollbar {
 
 @media (hover: none) {
   .gaff-rail {
-    width: 14px;
+    width: 12px;
   }
 
   .gaff-rail-thumb {
-    width: 12px;
+    width: 9px;
   }
 
   .gaff-rail.is-needed.is-visible {
@@ -320,11 +322,10 @@ body::-webkit-scrollbar {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.35;
+  opacity: 0.22;
+  background-attachment: fixed;
   background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(255, 255, 255, 0.35), transparent 50%),
-    radial-gradient(ellipse at 80% 90%, rgba(107, 127, 88, 0.25), transparent 45%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
 }
 
 .site-header,
@@ -445,8 +446,7 @@ body.is-ready .header-tag {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: linear-gradient(180deg, rgba(183, 195, 164, 0.97), rgba(183, 195, 164, 0.88));
-  backdrop-filter: blur(10px);
+  background: var(--page-bg);
   border-bottom: 1px solid rgba(26, 34, 24, 0.12);
 }
 

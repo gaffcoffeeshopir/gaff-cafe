@@ -2,7 +2,8 @@
  * ریل اسکرول برند گاف — جایگزین نوار پیش‌فرض مرورگر
  */
 (function () {
-  const MIN_THUMB = 36;
+  const MIN_THUMB = 24;
+  const MAX_THUMB = 40;
   const IDLE_MS = 1400;
 
   const rail = document.createElement("div");
@@ -44,7 +45,7 @@
     const maxScroll = Math.max(0, doc - view);
     const trackH = track.clientHeight;
     const thumbH = maxScroll
-      ? Math.max(MIN_THUMB, Math.round((view / doc) * trackH))
+      ? Math.min(MAX_THUMB, Math.max(MIN_THUMB, Math.round((view / doc) * trackH)))
       : trackH;
     const travel = Math.max(0, trackH - thumbH);
     const top = maxScroll ? (scrollTop / maxScroll) * travel : 0;
