@@ -457,17 +457,28 @@
     );
   }
 
-  renderNav();
-  renderMenu();
-  renderFooter();
-  updateCartUI();
+  async function boot() {
+    try {
+      await loadMenuFromServer();
+    } catch (err) {
+      console.error(err);
+      showToast("خطا در بارگذاری منو");
+    }
 
-  document.querySelectorAll(".menu-section").forEach((sec) => {
-    observer.observe(sec);
-    revealObserver.observe(sec);
-  });
+    renderNav();
+    renderMenu();
+    renderFooter();
+    updateCartUI();
 
-  requestAnimationFrame(() => {
-    document.body.classList.add("is-ready");
-  });
+    document.querySelectorAll(".menu-section").forEach((sec) => {
+      observer.observe(sec);
+      revealObserver.observe(sec);
+    });
+
+    requestAnimationFrame(() => {
+      document.body.classList.add("is-ready");
+    });
+  }
+
+  boot();
 })();
