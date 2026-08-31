@@ -44,7 +44,7 @@ body {
   background-attachment: fixed;
   line-height: 1.6;
   padding-bottom: 5.5rem;
-  padding-left: max(0.85rem, env(safe-area-inset-left, 0px));
+  padding-inline: max(0.75rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   scrollbar-width: none;
 }
 
@@ -333,8 +333,12 @@ body::-webkit-scrollbar {
 /* —— Header / brand —— */
 .site-header {
   text-align: center;
-  padding: 1.25rem 1rem 0.25rem;
+  padding: 1.25rem 0 0.25rem;
   animation: rise 0.7s ease both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .slogan {
@@ -346,6 +350,10 @@ body::-webkit-scrollbar {
   transform: translateY(10px);
   transition: opacity 0.7s ease, transform 0.7s ease;
   transition-delay: 0.15s;
+  text-align: center;
+  width: 100%;
+  padding-inline: 0.5rem;
+  box-sizing: border-box;
 }
 
 body.is-ready .slogan {
@@ -354,14 +362,20 @@ body.is-ready .slogan {
 }
 
 .brand {
-  display: grid;
-  justify-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
   display: block;
   width: min(280px, 78vw);
+  max-width: 100%;
   height: auto;
+  margin-inline: auto;
   object-fit: contain;
   opacity: 0;
   transform: translateY(18px) scale(0.92);
