@@ -103,6 +103,11 @@
     });
 
     filterCats.innerHTML = chips.join("");
+
+    const activeChip = filterCats.querySelector(".cat-chip.is-active");
+    if (activeChip) {
+      activeChip.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
+    }
   }
 
   function renderNewCategoryPick() {
