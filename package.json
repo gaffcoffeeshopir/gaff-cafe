@@ -15,8 +15,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "dotenv": "^16.6.1",
     "express": "^4.22.2",
-    "https-proxy-agent": "^9.1.0"
+    "https-proxy-agent": "^9.1.0",
+    "pg": "^8.23.0"
   }
 }

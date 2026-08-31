@@ -32,8 +32,16 @@ const PROXY_URL =
   "";
 
 const proxyAgent = PROXY_URL ? new HttpsProxyAgent(PROXY_URL) : undefined;
-const MENU_PATH = path.join(__dirname, "data", "menu.json");
 const sessions = new Map();
+
+const {
+  initMenuDb,
+  readMenu,
+  writeMenu,
+  saveSticker,
+  restoreStickersToDisk,
+  getDbMode,
+} = require("./lib/menu-db");
 
 const app = express();
 const root = __dirname;
@@ -66,16 +74,6 @@ function isSafeIconPath(iconPath) {
     return false;
   }
   return fs.existsSync(abs);
-}
-
-function readMenu() {
-  const raw = fs.readFileSync(MENU_PATH, "utf8");
-  return JSON.parse(raw);
-}
-
-function writeMenu(menu) {
-  fs.mkdirSync(path.dirname(MENU_PATH), { recursive: true });
-  fs.writeFileSync(MENU_PATH, JSON.stringify(menu, null, 2), "utf8");
 }
 
 function newToken() {
@@ -245,19 +243,27 @@ async function setupTelegramBot() {
   }
 }
 
-app.get("/api/health", (_req, res) => {
-  res.json({
-    ok: true,
-    botConfigured: Boolean(BOT_TOKEN),
-    chatConfigured: Boolean(CHAT_ID),
-    publicUrl: PUBLIC_BASE_URL,
-    adminUrl: ADMIN_URL,
-  });
+app.get("/api/health", async (_req, res) => {
+  try {
+    const menu = await readMenu();
+    res.json({
+      ok: true,
+      botConfigured: Boolean(BOT_TOKEN),
+      chatConfigured: Boolean(CHAT_ID),
+      publicUrl: PUBLIC_BASE_URL,
+      adminUrl: ADMIN_URL,
+      db: getDbMode(),
+      categories: menu.categories.length,
+      items: menu.items.length,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
-app.get("/api/menu", (_req, res) => {
+app.get("/api/menu", async (_req, res) => {
   try {
-    res.json(readMenu());
+    res.json(await readMenu());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -275,9 +281,9 @@ app.post("/api/admin/login", (req, res) => {
   res.json({ ok: true, token });
 });
 
-app.get("/api/admin/menu", requireAdmin, (_req, res) => {
+app.get("/api/admin/menu", requireAdmin, async (_req, res) => {
   try {
-    res.json(readMenu());
+    res.json(await readMenu());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -291,7 +297,7 @@ app.get("/api/admin/stickers", requireAdmin, (_req, res) => {
   }
 });
 
-app.post("/api/admin/stickers", requireAdmin, (req, res) => {
+app.post("/api/admin/stickers", requireAdmin, async (req, res) => {
   try {
     const nameRaw = String((req.body && req.body.name) || "sticker").trim();
     const dataUrl = String((req.body && req.body.data) || "");
@@ -303,6 +309,13 @@ app.post("/api/admin/stickers", requireAdmin, (req, res) => {
     let ext = match[1].toLowerCase();
     if (ext === "jpeg") ext = "jpg";
     if (ext === "svg+xml") ext = "svg";
+
+    const mimeMap = {
+      png: "image/png",
+      jpg: "image/jpeg",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+    };
 
     const safeBase =
       nameRaw
@@ -316,7 +329,9 @@ app.post("/api/admin/stickers", requireAdmin, (req, res) => {
     fs.mkdirSync(ICONS_DIR, { recursive: true });
     const file = `${safeBase}-${Date.now().toString(36).slice(-5)}.${ext}`;
     const abs = path.join(ICONS_DIR, file);
-    fs.writeFileSync(abs, Buffer.from(match[2], "base64"));
+    const buffer = Buffer.from(match[2], "base64");
+    fs.writeFileSync(abs, buffer);
+    await saveSticker(file, mimeMap[ext] || "application/octet-stream", buffer);
 
     const iconPath = "img/icons/" + file;
     res.json({ ok: true, sticker: { file, path: iconPath } });
@@ -325,9 +340,9 @@ app.post("/api/admin/stickers", requireAdmin, (req, res) => {
   }
 });
 
-app.post("/api/admin/categories", requireAdmin, (req, res) => {
+app.post("/api/admin/categories", requireAdmin, async (req, res) => {
   try {
-    const menu = readMenu();
+    const menu = await readMenu();
     const name = String((req.body && req.body.name) || "").trim();
     const icon = String((req.body && req.body.icon) || "").trim().replace(/\\/g, "/");
 
@@ -351,16 +366,16 @@ app.post("/api/admin/categories", requireAdmin, (req, res) => {
 
     const category = { id: unique, name, icon };
     menu.categories.push(category);
-    writeMenu(menu);
+    await writeMenu(menu);
     res.json({ ok: true, category });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-app.delete("/api/admin/categories/:id", requireAdmin, (req, res) => {
+app.delete("/api/admin/categories/:id", requireAdmin, async (req, res) => {
   try {
-    const menu = readMenu();
+    const menu = await readMenu();
     const id = req.params.id;
     const cat = menu.categories.find((c) => c.id === id);
     if (!cat) return res.status(404).json({ ok: false, error: "دسته پیدا نشد" });
@@ -374,16 +389,16 @@ app.delete("/api/admin/categories/:id", requireAdmin, (req, res) => {
     }
 
     menu.categories = menu.categories.filter((c) => c.id !== id);
-    writeMenu(menu);
+    await writeMenu(menu);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-app.patch("/api/admin/items/:id", requireAdmin, (req, res) => {
+app.patch("/api/admin/items/:id", requireAdmin, async (req, res) => {
   try {
-    const menu = readMenu();
+    const menu = await readMenu();
     const item = menu.items.find((i) => i.id === req.params.id);
     if (!item) return res.status(404).json({ ok: false, error: "محصول پیدا نشد" });
 
@@ -420,16 +435,16 @@ app.patch("/api/admin/items/:id", requireAdmin, (req, res) => {
       delete item.options;
     }
 
-    writeMenu(menu);
+    await writeMenu(menu);
     res.json({ ok: true, item });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-app.post("/api/admin/items", requireAdmin, (req, res) => {
+app.post("/api/admin/items", requireAdmin, async (req, res) => {
   try {
-    const menu = readMenu();
+    const menu = await readMenu();
     const name = String((req.body && req.body.name) || "").trim();
     const categoryId = String((req.body && req.body.categoryId) || "").trim();
     const price = Number(req.body && req.body.price);
@@ -460,22 +475,22 @@ app.post("/api/admin/items", requireAdmin, (req, res) => {
     }
 
     menu.items.push(item);
-    writeMenu(menu);
+    await writeMenu(menu);
     res.json({ ok: true, item });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
 
-app.delete("/api/admin/items/:id", requireAdmin, (req, res) => {
+app.delete("/api/admin/items/:id", requireAdmin, async (req, res) => {
   try {
-    const menu = readMenu();
+    const menu = await readMenu();
     const before = menu.items.length;
     menu.items = menu.items.filter((i) => i.id !== req.params.id);
     if (menu.items.length === before) {
       return res.status(404).json({ ok: false, error: "محصول پیدا نشد" });
     }
-    writeMenu(menu);
+    await writeMenu(menu);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
@@ -577,23 +592,40 @@ app.get("*", (req, res, next) => {
   res.sendFile(path.join(root, "index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`GAFF running at http://localhost:${PORT}`);
-  console.log(`Admin desk: http://localhost:${PORT}/gaff-desk`);
-  console.log(`Public site: ${SITE_URL}`);
-  console.log(`Public admin: ${ADMIN_URL}`);
-  console.log(
-    BOT_TOKEN
-      ? "Telegram bot token: OK"
-      : "Telegram bot token: MISSING — فایل .env را بساز"
-  );
-  console.log(
-    CHAT_ID
-      ? `Telegram chat id: ${CHAT_ID}`
-      : "Telegram chat id: MISSING"
-  );
-  console.log(PROXY_URL ? `Proxy: ${PROXY_URL}` : "Proxy: none");
-  setupTelegramBot().catch((err) => {
-    console.error("Telegram setup failed:", err.message);
+async function boot() {
+  try {
+    const dbInfo = await initMenuDb();
+    const restored = await restoreStickersToDisk(ICONS_DIR);
+    console.log(`Database: ${dbInfo}`);
+    if (restored) console.log(`Stickers restored from DB: ${restored}`);
+  } catch (err) {
+    console.error("Database init failed:", err.message);
+    process.exit(1);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`GAFF running at http://localhost:${PORT}`);
+    console.log(`Admin desk: http://localhost:${PORT}/gaff-desk`);
+    console.log(`Public site: ${SITE_URL}`);
+    console.log(`Public admin: ${ADMIN_URL}`);
+    console.log(
+      BOT_TOKEN
+        ? "Telegram bot token: OK"
+        : "Telegram bot token: MISSING — فایل .env را بساز"
+    );
+    console.log(
+      CHAT_ID
+        ? `Telegram chat id: ${CHAT_ID}`
+        : "Telegram chat id: MISSING"
+    );
+    console.log(PROXY_URL ? `Proxy: ${PROXY_URL}` : "Proxy: none");
+    if (!process.env.DATABASE_URL) {
+      console.log("Tip: برای ماندگاری روی Render مقدار DATABASE_URL (مثلاً Neon رایگان) را ست کن");
+    }
+    setupTelegramBot().catch((err) => {
+      console.error("Telegram setup failed:", err.message);
+    });
   });
-});
+}
+
+boot();

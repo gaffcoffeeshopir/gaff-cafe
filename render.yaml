@@ -12,5 +12,9 @@ services:
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
+      - key: PUBLIC_BASE_URL
+        value: https://gaff-cafe.onrender.com
+      - key: DATABASE_URL
+        sync: false
       - key: NODE_VERSION
         value: "20"
