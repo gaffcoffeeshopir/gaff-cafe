@@ -368,6 +368,7 @@ body.is-ready .slogan {
   width: 100%;
   margin: 0;
   padding: 0;
+  line-height: 0;
 }
 
 .logo {
@@ -441,10 +442,11 @@ body.is-ready .header-tag {
 }
 
 .header-ornament {
-  /* همان شیفت افقی لوگو تا نوک لوگو و لوزی روی یک خط عمودی باشند */
+  /* نوک پایین لوگو و ضلع بالای لوزی روی یک خط افقی */
   --logo-shift-x: clamp(-14px, -3.2vw, -8px);
-  margin-top: 0;
+  margin: clamp(-2.1rem, -8vw, -1.25rem) auto 0;
   transform: translateX(var(--logo-shift-x));
+  align-items: flex-start;
 }
 
 /* —— Category nav —— */
