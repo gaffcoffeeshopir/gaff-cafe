@@ -1,47 +1,55 @@
-/* پنل مخفی مدیریت منو */
+/* پنل مدیریت — موبایل‌فرست */
 
 .admin-body {
   min-height: 100dvh;
-  padding: 1.25rem 1rem 2.5rem;
+  padding: 0.85rem 0.85rem calc(1.5rem + env(safe-area-inset-bottom));
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .admin-brand {
   margin: 0;
   font-family: var(--font-brand);
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--ink);
 }
 
 .admin-login {
-  min-height: 80dvh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   position: relative;
   z-index: 1;
+  padding: 1rem;
+}
+
+.admin-login-card {
+  width: min(400px, 100%);
 }
 
 .admin-card {
-  width: min(520px, 100%);
-  padding: 1.25rem;
+  width: 100%;
+  padding: 1rem;
   border: 2px solid var(--line);
-  background: rgba(242, 245, 235, 0.72);
+  background: rgba(242, 245, 235, 0.78);
   box-shadow: var(--shadow);
   position: relative;
   z-index: 1;
+  border-radius: 2px;
 }
 
-.admin-card h1,
-.admin-card h2 {
-  margin: 0.25rem 0 0.75rem;
-  font-size: 1.2rem;
+.admin-card h1 {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 1.25rem;
 }
 
 .admin-lead {
   margin: 0 0 1rem;
   color: var(--ink-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .admin-error {
@@ -58,9 +66,13 @@
   font-weight: 600;
 }
 
+.admin-full-btn {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0.35rem;
+}
+
 .admin-app {
-  max-width: 960px;
-  margin: 0 auto;
   position: relative;
   z-index: 1;
 }
@@ -69,106 +81,366 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  padding: 0.55rem 0.15rem;
+  background: linear-gradient(180deg, rgba(183, 195, 164, 0.96), rgba(183, 195, 164, 0.88));
+  backdrop-filter: blur(8px);
 }
 
 .admin-header h1 {
-  margin: 0.15rem 0 0;
-  font-size: 1.2rem;
+  margin: 0.1rem 0 0;
+  font-size: 1.05rem;
 }
 
-.admin-grid {
+.admin-logout {
+  min-height: 42px;
+  padding-inline: 0.85rem;
+  flex-shrink: 0;
+}
+
+.admin-stats {
   display: grid;
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
 }
 
-@media (min-width: 900px) {
-  .admin-grid {
-    grid-template-columns: 320px 1fr;
-    align-items: start;
-  }
+.stat-pill {
+  border: 1.5px solid rgba(26, 34, 24, 0.2);
+  background: rgba(242, 245, 235, 0.7);
+  padding: 0.55rem 0.35rem;
+  text-align: center;
 }
 
-.admin-form .field {
-  margin-bottom: 0.65rem;
+.stat-pill strong {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.2;
 }
 
-.check {
+.stat-pill span {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+/* دسته‌بندی — چیپ افقی اسکرول‌شونده */
+.admin-cats {
   display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.05rem 0.75rem;
+  margin: 0 -0.15rem 0.25rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-cats::-webkit-scrollbar {
+  display: none;
+}
+
+.cat-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0 0.85rem;
-  font-size: 0.9rem;
+  gap: 0.4rem;
+  border: 1.5px solid var(--line);
+  background: rgba(242, 245, 235, 0.65);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0.35rem 0.7rem 0.35rem 0.45rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.cat-chip img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.cat-chip .count {
+  display: grid;
+  place-items: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgba(26, 34, 24, 0.1);
+  font-size: 0.68rem;
+}
+
+.cat-chip.is-active {
+  background: var(--ink);
+  color: var(--cream);
+  transform: translateY(-1px);
+}
+
+.cat-chip.is-active .count {
+  background: var(--sage);
+  color: var(--ink);
+}
+
+/* انتخاب دسته در فرم افزودن */
+.field-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
-.admin-list-wrap {
-  width: 100%;
+.cat-pick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
 }
 
-.admin-list-head {
+.cat-pick-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  padding: 0.45rem 0.55rem;
+  border: 1.5px solid rgba(26, 34, 24, 0.22);
+  background: rgba(255, 255, 255, 0.4);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: right;
+}
+
+.cat-pick-btn img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.cat-pick-btn.is-active {
+  border-color: var(--ink);
+  background: var(--sage-soft);
+  box-shadow: 0 3px 10px rgba(26, 34, 24, 0.1);
+}
+
+/* افزودن محصول — آکاردئون */
+.admin-add {
+  margin-bottom: 0.9rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-add-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.admin-add-summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-add[open] .admin-add-summary {
+  border-bottom: 1px solid rgba(26, 34, 24, 0.15);
+  background: rgba(143, 163, 122, 0.18);
+}
+
+.admin-form {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.admin-form .field {
+  margin-bottom: 0.7rem;
+}
+
+.admin-form .field input,
+.admin-form .field textarea,
+.admin-form .field select {
+  min-height: 46px;
+  font-size: 16px; /* جلوگیری از زوم iOS */
+}
+
+.admin-form .field textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.35rem 0 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-ui {
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: rgba(255, 255, 255, 0.45);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.switch-ui::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: transform 0.2s;
+}
+
+.switch input:checked + .switch-ui {
+  background: var(--sage);
+}
+
+.switch input:checked + .switch-ui::after {
+  transform: translateX(-18px);
+}
+
+.admin-list-meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.35rem 0.1rem 0.55rem;
 }
 
-.admin-list-head select {
-  font: inherit;
-  border: 1.5px solid var(--line);
-  background: var(--cream);
-  padding: 0.4rem 0.55rem;
+.admin-list-meta h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.admin-list-meta span {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-weight: 600;
 }
 
 .admin-list {
   display: grid;
   gap: 0.65rem;
-  max-height: 70dvh;
-  overflow: auto;
+  padding-bottom: 1rem;
 }
 
 .admin-item {
   border: 1.5px solid rgba(26, 34, 24, 0.18);
-  background: rgba(255, 255, 255, 0.4);
-  padding: 0.75rem;
+  background: rgba(242, 245, 235, 0.72);
+  padding: 0.85rem;
   display: grid;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  box-shadow: 0 6px 18px rgba(26, 34, 24, 0.08);
 }
 
 .admin-item-top {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
-  align-items: start;
+  gap: 0.55rem;
+  align-items: flex-start;
 }
 
 .admin-item-top strong {
   font-size: 0.95rem;
+  line-height: 1.35;
 }
 
-.admin-item-top small {
+.admin-item-top .price-tag {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--sage-deep);
+  background: rgba(143, 163, 122, 0.25);
+  padding: 0.25rem 0.45rem;
+  white-space: nowrap;
+}
+
+.admin-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.admin-item-meta img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.admin-item-meta small {
   color: var(--ink-muted);
   font-size: 0.75rem;
 }
 
 .admin-item-fields {
   display: grid;
-  grid-template-columns: 1fr 110px;
   gap: 0.45rem;
 }
 
+.admin-item-fields .field-row {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.admin-item-fields .field-row span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.admin-item-fields input {
+  font: inherit;
+  font-size: 16px;
+  border: 1.5px solid var(--line);
+  background: var(--cream);
+  padding: 0.55rem 0.65rem;
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+}
+
 .admin-item-actions {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
 }
 
 .admin-item-actions .btn-primary,
-.admin-item-actions .btn-ghost {
-  padding: 0.45rem 0.7rem;
-  font-size: 0.8rem;
+.admin-item-actions .btn-danger {
+  min-height: 46px;
+  width: 100%;
+  font-size: 0.85rem;
 }
 
 .btn-danger {
@@ -177,8 +449,6 @@
   color: var(--danger);
   font: inherit;
   font-weight: 700;
-  font-size: 0.8rem;
-  padding: 0.45rem 0.7rem;
   cursor: pointer;
 }
 
@@ -187,11 +457,24 @@
   color: #fff;
 }
 
-.admin-item input,
-.admin-item select {
-  font: inherit;
-  border: 1.5px solid var(--line);
-  background: var(--cream);
-  padding: 0.4rem 0.5rem;
-  width: 100%;
+.admin-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--ink-muted);
+  border: 1.5px dashed rgba(26, 34, 24, 0.25);
+  background: rgba(242, 245, 235, 0.45);
+}
+
+@media (min-width: 560px) {
+  .admin-body {
+    padding-top: 1.25rem;
+  }
+
+  .cat-pick {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-item-fields {
+    grid-template-columns: 1.4fr 1fr;
+  }
 }
