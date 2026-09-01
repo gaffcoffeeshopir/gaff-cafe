@@ -194,23 +194,8 @@ function isStaffChat(chatId) {
   return String(chatId) === String(CHAT_ID);
 }
 
-function botStartInlineKeyboard() {
-  return {
-    inline_keyboard: [
-      [{ text: "☕ منوی دیجیتال", url: SITE_URL }],
-      [{ text: "🛠 پنل", url: ADMIN_URL }],
-    ],
-  };
-}
-
 function botWelcomeText() {
-  return (
-    "به ربات کافه گاف خوش آمدید ☕\n\n" +
-    "از منوی دستورات (/) استفاده کنید:\n" +
-    "/menu — منوی دیجیتال\n" +
-    "/panel — پنل مدیریت\n" +
-    "/close — بستن فیش شیفت"
-  );
+  return "به ربات کافه گاف خوش آمدید ☕\nلطفا دستور خود را از منوی پایین انتخاب کنید.";
 }
 
 async function sendBotMenu(chatId) {
@@ -263,12 +248,6 @@ async function handleTelegramUpdate(update) {
       chat_id: chatId,
       text: botWelcomeText(),
       reply_markup: { remove_keyboard: true },
-      disable_web_page_preview: true,
-    });
-    await telegramApi("sendMessage", {
-      chat_id: chatId,
-      text: "لینک‌های سریع:",
-      reply_markup: botStartInlineKeyboard(),
       disable_web_page_preview: true,
     });
     return;
