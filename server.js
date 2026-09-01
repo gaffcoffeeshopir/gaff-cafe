@@ -677,6 +677,15 @@ app.get("/gaff-desk", (_req, res) => {
   res.sendFile(path.join(root, "gaff-desk.html"));
 });
 
+app.use(
+  "/vendor/fonts/vazirmatn",
+  express.static(path.join(__dirname, "node_modules/@fontsource/vazirmatn"))
+);
+app.use(
+  "/vendor/fonts/cormorant",
+  express.static(path.join(__dirname, "node_modules/@fontsource/cormorant-garamond"))
+);
+
 app.use(express.static(root));
 
 app.get("*", (req, res, next) => {
