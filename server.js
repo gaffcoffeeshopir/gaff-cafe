@@ -195,7 +195,7 @@ function isStaffChat(chatId) {
 }
 
 function botWelcomeText() {
-  return "به ربات کافه گاف خوش آمدید ☕\nلطفا دستور خود را از منوی پایین انتخاب کنید.";
+  return "به ربات کافه گاف خوش آمدید. لطفاً دستور خود را از منوی پایین انتخاب کنید.";
 }
 
 async function sendBotMenu(chatId) {
@@ -247,7 +247,6 @@ async function handleTelegramUpdate(update) {
     await telegramApi("sendMessage", {
       chat_id: chatId,
       text: botWelcomeText(),
-      reply_markup: { remove_keyboard: true },
       disable_web_page_preview: true,
     });
     return;
