@@ -194,24 +194,22 @@ function isStaffChat(chatId) {
   return String(chatId) === String(CHAT_ID);
 }
 
-function botMainKeyboard() {
+function botStartInlineKeyboard() {
   return {
-    keyboard: [
-      [{ text: "☕ منوی دیجیتال" }, { text: "🛠 پنل" }],
-      [{ text: "📋 بستن فیش" }],
+    inline_keyboard: [
+      [{ text: "☕ منوی دیجیتال", url: SITE_URL }],
+      [{ text: "🛠 پنل", url: ADMIN_URL }],
     ],
-    resize_keyboard: true,
-    is_persistent: true,
   };
 }
 
 function botWelcomeText() {
   return (
     "به ربات کافه گاف خوش آمدید ☕\n\n" +
-    "از منوی پایین یکی را انتخاب کنید:\n" +
-    "• منوی دیجیتال — سفارش برای مشتری\n" +
-    "• پنل — مدیریت منو (نیاز به رمز)\n" +
-    "• بستن فیش — جمع‌بندی سفارش‌های شیفت"
+    "از منوی دستورات (/) استفاده کنید:\n" +
+    "/menu — منوی دیجیتال\n" +
+    "/panel — پنل مدیریت\n" +
+    "/close — بستن فیش شیفت"
   );
 }
 
@@ -264,28 +262,29 @@ async function handleTelegramUpdate(update) {
     await telegramApi("sendMessage", {
       chat_id: chatId,
       text: botWelcomeText(),
-      reply_markup: botMainKeyboard(),
+      reply_markup: { remove_keyboard: true },
+      disable_web_page_preview: true,
+    });
+    await telegramApi("sendMessage", {
+      chat_id: chatId,
+      text: "لینک‌های سریع:",
+      reply_markup: botStartInlineKeyboard(),
       disable_web_page_preview: true,
     });
     return;
   }
 
-  if (cmd === "/menu" || text === "☕ منوی دیجیتال" || text === "منوی دیجیتال") {
+  if (cmd === "/menu") {
     await sendBotMenu(chatId);
     return;
   }
 
-  if (cmd === "/panel" || cmd === "/admin" || text === "🛠 پنل" || text === "پنل") {
+  if (cmd === "/panel" || cmd === "/admin") {
     await sendBotPanel(chatId);
     return;
   }
 
-  if (
-    cmd === "/close" ||
-    cmd === "/fiche" ||
-    text === "📋 بستن فیش" ||
-    text === "بستن فیش"
-  ) {
+  if (cmd === "/close" || cmd === "/fiche") {
     await sendBotCloseShift(chatId);
   }
 }
