@@ -61,25 +61,16 @@ function saveOrders(orders) {
   window.dispatchEvent(new Event("gaff-orders-updated"));
 }
 
-function nextTrackingCode() {
-  const key = "gaff-track-n";
-  let n = parseInt(localStorage.getItem(key) || "41", 10) + 1;
-  if (n > 99) n = 1;
-  localStorage.setItem(key, String(n));
-  return "G-" + n;
-}
-
-function submitOrder({ tableNumber, note, items }) {
+function saveOrderFromServer(serverOrder) {
   const orders = loadOrders();
-  const trackingCode = nextTrackingCode();
   const order = {
-    id: "ord-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-    trackingCode,
-    tableNumber,
-    note: note || "",
-    items,
-    total: cartTotal(items),
-    createdAt: new Date().toISOString(),
+    id: serverOrder.id,
+    trackingCode: serverOrder.trackingCode,
+    tableNumber: serverOrder.tableNumber,
+    note: serverOrder.note || "",
+    items: serverOrder.items || [],
+    total: serverOrder.total,
+    createdAt: serverOrder.createdAt || new Date().toISOString(),
     status: "new",
   };
   orders.unshift(order);

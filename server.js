@@ -40,6 +40,9 @@ const {
   writeMenu,
   saveSticker,
   restoreStickersToDisk,
+  createOrder,
+  closeShift,
+  formatShiftReceipt,
   getDbMode,
 } = require("./lib/menu-db");
 
@@ -186,9 +189,17 @@ function botPanelKeyboard() {
   };
 }
 
+function isStaffChat(chatId) {
+  if (!CHAT_ID) return false;
+  return String(chatId) === String(CHAT_ID);
+}
+
 function botMainKeyboard() {
   return {
-    keyboard: [[{ text: "☕ منوی دیجیتال" }, { text: "🛠 پنل" }]],
+    keyboard: [
+      [{ text: "☕ منوی دیجیتال" }, { text: "🛠 پنل" }],
+      [{ text: "📋 بستن فیش" }],
+    ],
     resize_keyboard: true,
     is_persistent: true,
   };
@@ -199,7 +210,8 @@ function botWelcomeText() {
     "به ربات کافه گاف خوش آمدید ☕\n\n" +
     "از منوی پایین یکی را انتخاب کنید:\n" +
     "• منوی دیجیتال — سفارش برای مشتری\n" +
-    "• پنل — مدیریت منو (نیاز به رمز)"
+    "• پنل — مدیریت منو (نیاز به رمز)\n" +
+    "• بستن فیش — جمع‌بندی سفارش‌های شیفت"
   );
 }
 
@@ -217,6 +229,25 @@ async function sendBotPanel(chatId) {
     chat_id: chatId,
     text: "🛠 پنل مدیریت منو\nورود با رمز لازم است.",
     reply_markup: botPanelKeyboard(),
+    disable_web_page_preview: true,
+  });
+}
+
+async function sendBotCloseShift(chatId) {
+  if (!isStaffChat(chatId)) {
+    await telegramApi("sendMessage", {
+      chat_id: chatId,
+      text: "این گزینه فقط برای مدیریت کافه است.",
+      disable_web_page_preview: true,
+    });
+    return;
+  }
+
+  const orders = await closeShift();
+  const receipt = formatShiftReceipt(orders);
+  await telegramApi("sendMessage", {
+    chat_id: chatId,
+    text: receipt,
     disable_web_page_preview: true,
   });
 }
@@ -246,6 +277,16 @@ async function handleTelegramUpdate(update) {
 
   if (cmd === "/panel" || cmd === "/admin" || text === "🛠 پنل" || text === "پنل") {
     await sendBotPanel(chatId);
+    return;
+  }
+
+  if (
+    cmd === "/close" ||
+    cmd === "/fiche" ||
+    text === "📋 بستن فیش" ||
+    text === "بستن فیش"
+  ) {
+    await sendBotCloseShift(chatId);
   }
 }
 
@@ -258,6 +299,7 @@ async function setupTelegramBot() {
         { command: "start", description: "شروع" },
         { command: "menu", description: "منوی دیجیتال" },
         { command: "panel", description: "پنل" },
+        { command: "close", description: "بستن فیش شیفت" },
       ],
     });
     console.log("Telegram commands: OK");
@@ -593,8 +635,10 @@ app.get("/api/telegram/chat-id", async (_req, res) => {
 
 app.post("/api/order", async (req, res) => {
   try {
-    const order = req.body || {};
-    if (!order.tableNumber || !Array.isArray(order.items) || !order.items.length) {
+    const body = req.body || {};
+    const tableNumber = String(body.tableNumber || "").trim();
+    const items = body.items;
+    if (!tableNumber || !Array.isArray(items) || !items.length) {
       return res.status(400).json({ ok: false, error: "سفارش نامعتبر است" });
     }
     if (!CHAT_ID) {
@@ -604,6 +648,20 @@ app.post("/api/order", async (req, res) => {
       });
     }
 
+    const saved = await createOrder({
+      tableNumber,
+      note: body.note || "",
+      items,
+      total: body.total,
+    });
+
+    const order = {
+      ...saved,
+      totalLabel:
+        body.totalLabel ||
+        new Intl.NumberFormat("fa-IR").format(saved.total) + " تومان",
+    };
+
     const text = formatOrderMessage(order);
     await telegramApi("sendMessage", {
       chat_id: CHAT_ID,
@@ -611,7 +669,7 @@ app.post("/api/order", async (req, res) => {
       disable_web_page_preview: true,
     });
 
-    res.json({ ok: true, sent: true });
+    res.json({ ok: true, sent: true, order: saved });
   } catch (err) {
     console.error("[order]", err.message);
     res.status(500).json({ ok: false, error: err.message });

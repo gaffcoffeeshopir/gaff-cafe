@@ -187,36 +187,6 @@
     cartFab.classList.add("cart-fab-pulse");
   }
 
-  async function sendOrderToBot(order) {
-    const payload = {
-      trackingCode: order.trackingCode,
-      tableNumber: order.tableNumber,
-      note: order.note || "",
-      total: order.total,
-      totalLabel: formatPrice(order.total),
-      items: order.items,
-      createdAt: order.createdAt,
-    };
-
-    const res = await fetch("/api/order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {
-      /* ignore */
-    }
-
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || "ارسال به تلگرام ناموفق بود");
-    }
-    return data;
-  }
-
   async function showConfirm(order) {
     lastOrder = order;
     if (confirmMessage) {
@@ -230,17 +200,6 @@
       confirmStatus.textContent = "";
     }
     confirmModal.showModal();
-
-    try {
-      await sendOrderToBot(order);
-    } catch (err) {
-      console.warn(err);
-      if (confirmStatus) {
-        confirmStatus.hidden = false;
-        confirmStatus.textContent = "سفارش ذخیره شد؛ ارسال به کافه با تأخیر انجام می‌شود.";
-        confirmStatus.className = "confirm-status is-err";
-      }
-    }
   }
 
   catNav.addEventListener("click", (e) => {
@@ -307,7 +266,7 @@
     updateCartUI();
   });
 
-  submitOrderBtn.addEventListener("click", () => {
+  submitOrderBtn.addEventListener("click", async () => {
     const tableNumber = tableNumberInput.value.trim();
     if (!tableNumber) {
       showToast("شماره میز را وارد کنید");
@@ -317,17 +276,42 @@
     const items = loadCart();
     if (!items.length) return;
 
-    const order = submitOrder({
-      tableNumber,
-      note: orderNoteInput.value.trim(),
-      items,
-    });
+    submitOrderBtn.disabled = true;
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tableNumber,
+          note: orderNoteInput.value.trim(),
+          items,
+          total: cartTotal(items),
+          totalLabel: formatPrice(cartTotal(items)),
+        }),
+      });
 
-    tableNumberInput.value = "";
-    orderNoteInput.value = "";
-    updateCartUI();
-    closeDrawer();
-    showConfirm(order);
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        /* ignore */
+      }
+
+      if (!res.ok || !data.ok || !data.order) {
+        throw new Error(data.error || "ثبت سفارش ناموفق بود");
+      }
+
+      const order = saveOrderFromServer(data.order);
+      tableNumberInput.value = "";
+      orderNoteInput.value = "";
+      updateCartUI();
+      closeDrawer();
+      showConfirm(order);
+    } catch (err) {
+      showToast(err.message || "خطا در ثبت سفارش");
+    } finally {
+      submitOrderBtn.disabled = false;
+    }
   });
 
   closeConfirmBtn.addEventListener("click", () => {
