@@ -108,6 +108,17 @@
   flex-shrink: 0;
 }
 
+.admin-persist-warn {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1.5px solid #8b3a2f;
+  background: rgba(139, 58, 47, 0.12);
+  color: #5c241c;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -24,6 +24,7 @@
   const adminStats = document.getElementById("adminStats");
   const listTitle = document.getElementById("listTitle");
   const listCount = document.getElementById("listCount");
+  const persistHint = document.getElementById("persistHint");
 
   let menu = { categories: [], items: [] };
   let stickers = [];
@@ -237,6 +238,24 @@
     refreshUI();
   }
 
+  async function loadPersistenceStatus() {
+    if (!persistHint) return;
+    try {
+      const data = await api("/api/admin/status");
+      if (data.persistent) {
+        persistHint.hidden = true;
+        persistHint.textContent = "";
+        return;
+      }
+      persistHint.textContent =
+        data.warning ||
+        "ذخیره‌سازی موقت است — برای ماندگاری دائمی DATABASE_URL را روی Render ست کنید.";
+      persistHint.hidden = false;
+    } catch {
+      persistHint.hidden = true;
+    }
+  }
+
   function readFileAsDataUrl(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -257,6 +276,7 @@
       showApp();
       await loadStickers();
       await loadMenu();
+      await loadPersistenceStatus();
     } catch (err) {
       loginError.textContent = err.message;
       loginError.hidden = false;
@@ -451,6 +471,7 @@
       showApp();
       await loadStickers();
       await loadMenu();
+      await loadPersistenceStatus();
     } catch {
       showLogin();
     }

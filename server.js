@@ -43,6 +43,8 @@ const {
   createOrder,
   closeShift,
   formatShiftReceipt,
+  getPersistenceInfo,
+  isPersistentStorage,
   getDbMode,
 } = require("./lib/menu-db");
 
@@ -304,6 +306,7 @@ async function setupTelegramBot() {
 app.get("/api/health", async (_req, res) => {
   try {
     const menu = await readMenu();
+    const persistence = getPersistenceInfo();
     res.json({
       ok: true,
       botConfigured: Boolean(BOT_TOKEN),
@@ -311,6 +314,22 @@ app.get("/api/health", async (_req, res) => {
       publicUrl: PUBLIC_BASE_URL,
       adminUrl: ADMIN_URL,
       db: getDbMode(),
+      persistent: persistence.persistent,
+      categories: menu.categories.length,
+      items: menu.items.length,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/admin/status", requireAdmin, async (_req, res) => {
+  try {
+    const menu = await readMenu();
+    const persistence = getPersistenceInfo();
+    res.json({
+      ok: true,
+      ...persistence,
       categories: menu.categories.length,
       items: menu.items.length,
     });
@@ -672,6 +691,12 @@ async function boot() {
     const restored = await restoreStickersToDisk(ICONS_DIR);
     console.log(`Database: ${dbInfo}`);
     if (restored) console.log(`Stickers restored from DB: ${restored}`);
+    const persistence = getPersistenceInfo();
+    if (!persistence.persistent) {
+      console.warn("⚠️  " + persistence.warning);
+    } else {
+      console.log("Menu storage: persistent (" + persistence.mode + ")");
+    }
   } catch (err) {
     console.error("Database init failed:", err.message);
     process.exit(1);
