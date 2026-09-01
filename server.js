@@ -174,21 +174,51 @@ function telegramApi(method, body) {
   });
 }
 
-function botLinksKeyboard() {
+function botMenuKeyboard() {
   return {
-    inline_keyboard: [
-      [{ text: "☕ منوی کافه گاف", url: SITE_URL }],
-      [{ text: "🛠 پنل مدیریت", url: ADMIN_URL }],
-    ],
+    inline_keyboard: [[{ text: "☕ باز کردن منوی دیجیتال", url: SITE_URL }]],
+  };
+}
+
+function botPanelKeyboard() {
+  return {
+    inline_keyboard: [[{ text: "🛠 ورود به پنل", url: ADMIN_URL }]],
+  };
+}
+
+function botMainKeyboard() {
+  return {
+    keyboard: [[{ text: "☕ منوی دیجیتال" }, { text: "🛠 پنل" }]],
+    resize_keyboard: true,
+    is_persistent: true,
   };
 }
 
 function botWelcomeText() {
   return (
     "به ربات کافه گاف خوش آمدید ☕\n\n" +
-    "از دکمه‌های زیر وارد منوی دیجیتال یا پنل مدیریت شوید.\n" +
-    "ورود به پنل مدیریت نیاز به رمز دارد."
+    "از منوی پایین یکی را انتخاب کنید:\n" +
+    "• منوی دیجیتال — سفارش برای مشتری\n" +
+    "• پنل — مدیریت منو (نیاز به رمز)"
   );
+}
+
+async function sendBotMenu(chatId) {
+  await telegramApi("sendMessage", {
+    chat_id: chatId,
+    text: "☕ منوی دیجیتال کافه گاف",
+    reply_markup: botMenuKeyboard(),
+    disable_web_page_preview: true,
+  });
+}
+
+async function sendBotPanel(chatId) {
+  await telegramApi("sendMessage", {
+    chat_id: chatId,
+    text: "🛠 پنل مدیریت منو\nورود با رمز لازم است.",
+    reply_markup: botPanelKeyboard(),
+    disable_web_page_preview: true,
+  });
 }
 
 async function handleTelegramUpdate(update) {
@@ -199,13 +229,23 @@ async function handleTelegramUpdate(update) {
   const chatId = msg.chat.id;
   const cmd = text.split(/\s+/)[0].split("@")[0].toLowerCase();
 
-  if (cmd === "/start" || cmd === "/menu" || cmd === "/admin" || cmd === "/links") {
+  if (cmd === "/start") {
     await telegramApi("sendMessage", {
       chat_id: chatId,
       text: botWelcomeText(),
-      reply_markup: botLinksKeyboard(),
+      reply_markup: botMainKeyboard(),
       disable_web_page_preview: true,
     });
+    return;
+  }
+
+  if (cmd === "/menu" || text === "☕ منوی دیجیتال" || text === "منوی دیجیتال") {
+    await sendBotMenu(chatId);
+    return;
+  }
+
+  if (cmd === "/panel" || cmd === "/admin" || text === "🛠 پنل" || text === "پنل") {
+    await sendBotPanel(chatId);
   }
 }
 
@@ -215,10 +255,9 @@ async function setupTelegramBot() {
   try {
     await telegramApi("setMyCommands", {
       commands: [
-        { command: "start", description: "شروع و لینک‌های گاف" },
-        { command: "menu", description: "منوی دیجیتال کافه" },
-        { command: "admin", description: "پنل مدیریت منو" },
-        { command: "links", description: "نمایش لینک‌ها" },
+        { command: "start", description: "شروع" },
+        { command: "menu", description: "منوی دیجیتال" },
+        { command: "panel", description: "پنل" },
       ],
     });
     console.log("Telegram commands: OK");
