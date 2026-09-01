@@ -14,8 +14,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="preload" href="img/logo.png?v=2" as="image" />
+    <script>
+      document.documentElement.classList.add("is-ready");
+    </script>
   </head>
-  <body>
+  <body class="is-ready">
     <div class="bg-texture" aria-hidden="true"></div>
 
     <header class="site-header">

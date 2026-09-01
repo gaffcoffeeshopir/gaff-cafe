@@ -20,6 +20,49 @@ const CAFE_WHATSAPP = "98" + CAFE_INFO.phone.replace(/^0/, "").replace(/\D/g, ""
 let CATEGORIES = [];
 let MENU_ITEMS = [];
 
+const MENU_CACHE_KEY = "gaff-menu-v1";
+
+function applyMenuData(data) {
+  CATEGORIES = data.categories || [];
+  MENU_ITEMS = data.items || [];
+}
+
+function loadMenuCache() {
+  try {
+    const raw = localStorage.getItem(MENU_CACHE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data.categories || !data.items) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function saveMenuCache(data) {
+  try {
+    localStorage.setItem(
+      MENU_CACHE_KEY,
+      JSON.stringify({
+        categories: data.categories || [],
+        items: data.items || [],
+        savedAt: Date.now(),
+      })
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
+async function loadMenuFromServer() {
+  const res = await fetch("/api/menu");
+  if (!res.ok) throw new Error("منو لود نشد");
+  const data = await res.json();
+  applyMenuData(data);
+  saveMenuCache(data);
+  return data;
+}
+
 function formatPrice(toman) {
   return new Intl.NumberFormat("fa-IR").format(toman) + " تومان";
 }
@@ -43,13 +86,4 @@ function mapsLinks(info) {
     google: "https://www.google.com/maps/search/?api=1&query=" + q,
     neshan: "https://nshn.ir/?q=" + q,
   };
-}
-
-async function loadMenuFromServer() {
-  const res = await fetch("/api/menu");
-  if (!res.ok) throw new Error("منو لود نشد");
-  const data = await res.json();
-  CATEGORIES = data.categories || [];
-  MENU_ITEMS = data.items || [];
-  return data;
 }

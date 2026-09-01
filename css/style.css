@@ -356,6 +356,7 @@ body::-webkit-scrollbar {
   box-sizing: border-box;
 }
 
+html.is-ready .slogan,
 body.is-ready .slogan {
   opacity: 1;
   transform: translateY(0);
@@ -368,18 +369,15 @@ body.is-ready .slogan {
   width: 100%;
   margin: 0;
   padding: 0;
-  line-height: 0;
 }
 
 .logo {
-  /* کمی چپ برای جبران شاخه، ولی نه زیاد */
-  --logo-shift-x: clamp(-14px, -3.2vw, -8px);
+  --logo-shift-x: clamp(-17.5px, -4.4vw, -9px);
   display: block;
   width: min(280px, 78vw);
   max-width: 100%;
   height: auto;
   margin-inline: auto;
-  margin-bottom: 0;
   object-fit: contain;
   opacity: 0;
   transform: translateX(var(--logo-shift-x)) translateY(18px) scale(0.92);
@@ -389,6 +387,7 @@ body.is-ready .slogan {
     transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+html.is-ready .logo,
 body.is-ready .logo {
   opacity: 1;
   transform: translateX(var(--logo-shift-x)) translateY(0) scale(1);
@@ -412,6 +411,7 @@ body.is-ready .logo {
   transition: opacity 0.6s ease 0.55s;
 }
 
+html.is-ready .header-tag,
 body.is-ready .header-tag {
   opacity: 1;
 }
@@ -442,11 +442,7 @@ body.is-ready .header-tag {
 }
 
 .header-ornament {
-  /* نوک پایین لوگو و ضلع بالای لوزی روی یک خط افقی */
-  --logo-shift-x: clamp(-14px, -3.2vw, -8px);
-  margin: clamp(-2.1rem, -8vw, -1.25rem) auto 0;
-  transform: translateX(var(--logo-shift-x));
-  align-items: flex-start;
+  margin-top: 0.85rem;
 }
 
 /* —— Category nav —— */
@@ -1525,8 +1521,7 @@ a.footer-link:hover {
     transform: translateX(var(--logo-shift-x, 0px)) translateY(0) scale(1);
   }
   50% {
-    /* حرکت عمودی خیلی کم تا هم‌ترازی افقی با لوزی حفظ شود */
-    transform: translateX(var(--logo-shift-x, 0px)) translateY(-1px) scale(1);
+    transform: translateX(var(--logo-shift-x, 0px)) translateY(-6px) scale(1);
   }
 }
 
