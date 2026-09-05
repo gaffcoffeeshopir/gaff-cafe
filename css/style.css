@@ -781,12 +781,14 @@ body.ordering-off .drawer-overlay {
 
 .gate-birth-row select {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   border: 1.5px solid rgba(26, 34, 24, 0.22);
   background: #fff;
   color: var(--ink);
   padding: 0.45rem 0.5rem;
-  font: inherit;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
 }
 
 .field-label {
@@ -1102,17 +1104,26 @@ a.footer-link:hover {
 }
 
 .field input,
-.field textarea {
-  font: inherit;
+.field textarea,
+.field select {
+  /* 16px اجباری — کمتر از این روی موبایل باعث زوم کیبورد می‌شود */
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
   border: 1.5px solid var(--line);
   background: var(--cream);
   padding: 0.55rem 0.7rem;
   color: var(--ink);
   resize: vertical;
+  border-radius: 2px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   outline: 2px solid var(--sage);
   outline-offset: 1px;
 }

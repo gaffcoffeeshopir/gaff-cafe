@@ -467,9 +467,13 @@
 
 .admin-form .field input,
 .admin-form .field textarea,
-.admin-form .field select {
+.admin-form .field select,
+.admin-login .field input,
+.admin-item-fields input {
   min-height: 46px;
-  font-size: 16px; /* جلوگیری از زوم iOS */
+  font-size: 16px; /* جلوگیری از زوم کیبورد موبایل */
+  font-family: inherit;
+  line-height: 1.4;
 }
 
 .admin-form .field textarea {
@@ -616,8 +620,9 @@
 }
 
 .admin-item-fields input {
-  font: inherit;
+  font-family: inherit;
   font-size: 16px;
+  line-height: 1.4;
   border: 1.5px solid var(--line);
   background: var(--cream);
   padding: 0.55rem 0.65rem;
