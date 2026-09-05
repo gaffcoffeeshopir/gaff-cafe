@@ -1,8 +1,6 @@
 /* اطلاعات ثابت کافه + لود منو از سرور */
 
 const CAFE_INFO = {
-  phone: "09392737437",
-  phoneDisplay: "۰۹۳۹۲۷۳۷۴۳۷",
   instagram: "cofe_gaff",
   address: "کرج، دانشکده، سازمان آب",
   lat: 35.811257,
@@ -14,7 +12,11 @@ const CAFE_INFO = {
   developerName: "طراح سایت",
 };
 
-const CAFE_WHATSAPP = "98" + CAFE_INFO.phone.replace(/^0/, "").replace(/\D/g, "");
+/**
+ * سفارش آنلاین / افزودن به سبد
+ * موقتاً خاموش است. برای فعال‌سازی دوباره فقط true بگذار — کد حذف نشده.
+ */
+const ORDERING_ENABLED = false;
 
 /** با لود منو از API پر می‌شوند */
 let CATEGORIES = [];

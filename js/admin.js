@@ -19,7 +19,6 @@
   const filterCats = document.getElementById("filterCats");
   const itemList = document.getElementById("itemList");
   const newHasSize = document.getElementById("newHasSize");
-  const newDeltaWrap = document.getElementById("newDeltaWrap");
   const addHint = document.getElementById("addHint");
   const adminStats = document.getElementById("adminStats");
   const listTitle = document.getElementById("listTitle");
@@ -67,10 +66,6 @@
   function showApp() {
     loginView.hidden = true;
     appView.hidden = false;
-  }
-
-  function formatPrice(n) {
-    return new Intl.NumberFormat("fa-IR").format(n) + " تومان";
   }
 
   function countByCategory(id) {
@@ -173,10 +168,6 @@
 
     itemList.innerHTML = items
       .map((item) => {
-        const delta =
-          item.options && item.options.find((o) => o.id === "double")
-            ? item.options.find((o) => o.id === "double").priceDelta
-            : 0;
         const hasSize = Boolean(item.options && item.options.length);
         const cat = catById(item.categoryId);
         const safeName = item.name.replace(/"/g, "&quot;");
@@ -190,26 +181,17 @@
                 <small>${cat ? cat.name : item.categoryId}${hasSize ? " · تک/دوبل" : ""}</small>
               </div>
             </div>
-            <span class="price-tag">${formatPrice(item.price)}</span>
           </div>
           <div class="admin-item-fields">
             <label class="field-row">
               <span>نام</span>
               <input type="text" class="edit-name" value="${safeName}" />
             </label>
-            <label class="field-row">
-              <span>قیمت (تومان)</span>
-              <input type="number" class="edit-price" min="0" step="1000" inputmode="numeric" value="${item.price}" />
-            </label>
           </div>
           <label class="switch">
             <input type="checkbox" class="edit-size" ${hasSize ? "checked" : ""} />
             <span class="switch-ui" aria-hidden="true"></span>
             <span class="switch-text">گزینه تک / دوبل</span>
-          </label>
-          <label class="field edit-delta-wrap" ${hasSize ? "" : "hidden"}>
-            <span>مابه‌تفاوت دوبل (تومان)</span>
-            <input type="number" class="edit-delta" min="0" step="1000" inputmode="numeric" value="${delta}" />
           </label>
           <div class="admin-item-actions">
             <button type="button" class="btn-primary save-btn">ذخیره</button>
@@ -290,10 +272,6 @@
   logoutBtn.addEventListener("click", () => {
     setToken("");
     showLogin();
-  });
-
-  newHasSize.addEventListener("change", () => {
-    newDeltaWrap.hidden = !newHasSize.checked;
   });
 
   filterCats.addEventListener("click", (e) => {
@@ -395,15 +373,12 @@
         body: JSON.stringify({
           name: document.getElementById("newName").value,
           categoryId: newCategory.value,
-          price: Number(document.getElementById("newPrice").value),
           description: document.getElementById("newDesc").value,
           hasSize: newHasSize.checked,
-          doubleDelta: Number(document.getElementById("newDelta").value || 0),
         }),
       });
       const keptCat = newCategory.value;
       addForm.reset();
-      newDeltaWrap.hidden = true;
       newCategory.value = keptCat;
       addHint.textContent = "محصول اضافه شد و در منوی مشتری نمایش داده می‌شود.";
       addHint.hidden = false;
@@ -416,14 +391,6 @@
     }
   });
 
-  itemList.addEventListener("change", (e) => {
-    const size = e.target.closest(".edit-size");
-    if (!size) return;
-    const card = size.closest(".admin-item");
-    const wrap = card.querySelector(".edit-delta-wrap");
-    wrap.hidden = !size.checked;
-  });
-
   itemList.addEventListener("click", async (e) => {
     const card = e.target.closest(".admin-item");
     if (!card) return;
@@ -432,17 +399,12 @@
     if (e.target.closest(".save-btn")) {
       try {
         const hasSize = card.querySelector(".edit-size").checked;
-        const body = {
-          name: card.querySelector(".edit-name").value.trim(),
-          price: Number(card.querySelector(".edit-price").value),
-          hasSize,
-        };
-        if (hasSize) {
-          body.doubleDelta = Number(card.querySelector(".edit-delta").value || 0);
-        }
         await api("/api/admin/items/" + id, {
           method: "PATCH",
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            name: card.querySelector(".edit-name").value.trim(),
+            hasSize,
+          }),
         });
         await loadMenu();
       } catch (err) {

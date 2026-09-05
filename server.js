@@ -43,6 +43,14 @@ const {
   createOrder,
   closeShift,
   formatShiftReceipt,
+  createFeedback,
+  listFeedback,
+  deleteFeedback,
+  lookupCustomer,
+  upsertCustomer,
+  listCustomers,
+  getCustomerDetail,
+  normalizeIranPhone,
   getPersistenceInfo,
   isPersistentStorage,
   getDbMode,
@@ -121,11 +129,9 @@ function formatOrderMessage(order) {
     `🔖 کد: ${order.trackingCode || "-"}\n` +
     `🪑 میز: ${order.tableNumber}\n` +
     `━━━━━━━━━━━━\n` +
-    `${lines.join("\n")}\n` +
-    `━━━━━━━━━━━━\n` +
-    `💰 جمع: ${order.totalLabel || order.total}`;
+    `${lines.join("\n")}`;
 
-  if (order.note) text += `\n📝 یادداشت: ${order.note}`;
+  if (order.note) text += `\n━━━━━━━━━━━━\n📝 یادداشت: ${order.note}`;
   return text;
 }
 
@@ -486,27 +492,11 @@ app.patch("/api/admin/items/:id", requireAdmin, async (req, res) => {
       else delete item.description;
     }
     if (req.body.categoryId != null) item.categoryId = String(req.body.categoryId);
-    if (req.body.price != null) {
-      const price = Number(req.body.price);
-      if (!Number.isFinite(price) || price < 0) {
-        return res.status(400).json({ ok: false, error: "قیمت نامعتبر است" });
-      }
-      item.price = Math.round(price);
-    }
-    if (req.body.doubleDelta != null) {
-      const delta = Number(req.body.doubleDelta);
-      if (!Number.isFinite(delta) || delta < 0) {
-        return res.status(400).json({ ok: false, error: "مابه‌تفاوت دوبل نامعتبر است" });
-      }
-      if (!item.options) {
-        item.options = [
-          { id: "single", label: "تک", priceDelta: 0 },
-          { id: "double", label: "دوبل", priceDelta: Math.round(delta) },
-        ];
-      } else {
-        const dbl = item.options.find((o) => o.id === "double");
-        if (dbl) dbl.priceDelta = Math.round(delta);
-      }
+    if (req.body.hasSize === true) {
+      item.options = [
+        { id: "single", label: "تک", priceDelta: 0 },
+        { id: "double", label: "دوبل", priceDelta: 0 },
+      ];
     }
     if (req.body.hasSize === false) {
       delete item.options;
@@ -524,30 +514,25 @@ app.post("/api/admin/items", requireAdmin, async (req, res) => {
     const menu = await readMenu();
     const name = String((req.body && req.body.name) || "").trim();
     const categoryId = String((req.body && req.body.categoryId) || "").trim();
-    const price = Number(req.body && req.body.price);
     const description = String((req.body && req.body.description) || "").trim();
     const hasSize = Boolean(req.body && req.body.hasSize);
-    const doubleDelta = Number((req.body && req.body.doubleDelta) || 0);
 
     if (!name) return res.status(400).json({ ok: false, error: "نام محصول لازم است" });
     if (!menu.categories.some((c) => c.id === categoryId)) {
       return res.status(400).json({ ok: false, error: "دسته‌بندی نامعتبر است" });
-    }
-    if (!Number.isFinite(price) || price < 0) {
-      return res.status(400).json({ ok: false, error: "قیمت نامعتبر است" });
     }
 
     const item = {
       id: slugifyId(name),
       name,
       categoryId,
-      price: Math.round(price),
+      price: 0,
     };
     if (description) item.description = description;
     if (hasSize) {
       item.options = [
         { id: "single", label: "تک", priceDelta: 0 },
-        { id: "double", label: "دوبل", priceDelta: Math.round(Math.max(0, doubleDelta)) },
+        { id: "double", label: "دوبل", priceDelta: 0 },
       ];
     }
 
@@ -649,13 +634,12 @@ app.post("/api/order", async (req, res) => {
       note: body.note || "",
       items,
       total: body.total,
+      customerPhone: body.customerPhone || body.phone || "",
     });
 
     const order = {
       ...saved,
-      totalLabel:
-        body.totalLabel ||
-        new Intl.NumberFormat("fa-IR").format(saved.total) + " تومان",
+      totalLabel: "",
     };
 
     const text = formatOrderMessage(order);
@@ -672,9 +656,144 @@ app.post("/api/order", async (req, res) => {
   }
 });
 
+/* نظرات مشتری — عمومی فقط ثبت؛ مشاهده فقط ادمین */
+app.post("/api/feedback", async (req, res) => {
+  try {
+    const name = String((req.body && req.body.name) || "").trim();
+    const message = String((req.body && req.body.message) || "").trim();
+    const phone = String((req.body && req.body.phone) || "").trim();
+    if (!message) {
+      return res.status(400).json({ ok: false, error: "متن نظر را بنویسید" });
+    }
+    if (message.length < 3) {
+      return res.status(400).json({ ok: false, error: "نظر خیلی کوتاه است" });
+    }
+    const saved = await createFeedback({ name, message, phone });
+    res.json({ ok: true, id: saved.id });
+  } catch (err) {
+    console.error("[feedback]", err.message);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/admin/feedback", requireAdmin, async (_req, res) => {
+  try {
+    const items = await listFeedback();
+    res.json({ ok: true, items });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete("/api/admin/feedback/:id", requireAdmin, async (req, res) => {
+  try {
+    const removed = await deleteFeedback(req.params.id);
+    if (!removed) return res.status(404).json({ ok: false, error: "نظر پیدا نشد" });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+/* مشتریان — ثبت از سایت، مشاهده فقط ادمین */
+app.post("/api/customers/lookup", async (req, res) => {
+  try {
+    const phone = normalizeIranPhone((req.body && req.body.phone) || "");
+    if (!phone) {
+      return res.status(400).json({ ok: false, error: "شماره موبایل نامعتبر است" });
+    }
+    const customer = await lookupCustomer(phone);
+    if (!customer) {
+      return res.json({ ok: true, exists: false, phone });
+    }
+    await upsertCustomer({ phone }); // touch last_seen
+    const fresh = await lookupCustomer(phone);
+    res.json({
+      ok: true,
+      exists: true,
+      phone: fresh.phone,
+      name: fresh.name || "",
+      hasName: Boolean(fresh.name),
+      birthJalali: fresh.birthJalali || "",
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post("/api/customers/register", async (req, res) => {
+  try {
+    const body = req.body || {};
+    const phone = normalizeIranPhone(body.phone || "");
+    if (!phone) {
+      return res.status(400).json({ ok: false, error: "شماره موبایل نامعتبر است" });
+    }
+    const birthMonth = Number(body.birthMonth);
+    const birthDay = Number(body.birthDay);
+    const birthYear = body.birthYear != null ? Number(body.birthYear) : null;
+
+    if (
+      !Number.isFinite(birthMonth) ||
+      birthMonth < 1 ||
+      birthMonth > 12 ||
+      !Number.isFinite(birthDay) ||
+      birthDay < 1 ||
+      birthDay > 31
+    ) {
+      return res.status(400).json({ ok: false, error: "تاریخ تولد شمسی را کامل وارد کنید" });
+    }
+
+    const customer = await upsertCustomer({
+      phone,
+      name: body.name || "",
+      birthMonth,
+      birthDay,
+      birthYear,
+    });
+
+    res.json({
+      ok: true,
+      customer: {
+        phone: customer.phone,
+        name: customer.name || "",
+        birthJalali: customer.birthJalali || "",
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/admin/customers", requireAdmin, async (_req, res) => {
+  try {
+    const items = await listCustomers();
+    res.json({ ok: true, items });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/admin/customers/:phone", requireAdmin, async (req, res) => {
+  try {
+    const detail = await getCustomerDetail(req.params.phone);
+    if (!detail) return res.status(404).json({ ok: false, error: "مشتری پیدا نشد" });
+    res.json({ ok: true, ...detail });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 /* مسیر مخفی پنل — در سایت مشتری لینک نمی‌شود */
 app.get("/gaff-desk", (_req, res) => {
   res.sendFile(path.join(root, "gaff-desk.html"));
+});
+
+app.get("/gaff-feedback", (_req, res) => {
+  res.sendFile(path.join(root, "gaff-feedback.html"));
+});
+
+app.get("/gaff-customers", (_req, res) => {
+  res.sendFile(path.join(root, "gaff-customers.html"));
 });
 
 app.use(

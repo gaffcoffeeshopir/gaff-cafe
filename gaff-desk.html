@@ -34,7 +34,11 @@
           <p class="admin-brand">GAFF Desk</p>
           <h1>مدیریت منو</h1>
         </div>
-        <button type="button" class="btn-ghost admin-logout" id="logoutBtn">خروج</button>
+        <div class="admin-header-actions">
+          <a class="btn-ghost admin-nav-link" href="/gaff-customers">مشتریان</a>
+          <a class="btn-ghost admin-nav-link" href="/gaff-feedback">نظریات و انتقادات</a>
+          <button type="button" class="btn-ghost admin-logout" id="logoutBtn">خروج</button>
+        </div>
       </header>
 
       <p class="admin-persist-warn" id="persistHint" hidden></p>
@@ -86,10 +90,6 @@
           <input type="hidden" id="newCategory" />
 
           <label class="field">
-            <span>قیمت پایه (تومان)</span>
-            <input type="number" id="newPrice" min="0" step="1000" required inputmode="numeric" />
-          </label>
-          <label class="field">
             <span>توضیح (اختیاری)</span>
             <textarea id="newDesc" rows="2" placeholder="مواد یا توضیح کوتاه"></textarea>
           </label>
@@ -98,11 +98,6 @@
             <input type="checkbox" id="newHasSize" />
             <span class="switch-ui" aria-hidden="true"></span>
             <span class="switch-text">گزینه تک / دوبل</span>
-          </label>
-
-          <label class="field" id="newDeltaWrap" hidden>
-            <span>مابه‌تفاوت دوبل (تومان)</span>
-            <input type="number" id="newDelta" min="0" step="1000" value="40000" inputmode="numeric" />
           </label>
 
           <button type="submit" class="btn-primary admin-full-btn">ثبت محصول</button>

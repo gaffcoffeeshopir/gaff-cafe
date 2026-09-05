@@ -31,7 +31,6 @@
           (line) => `
         <li>
           <span>${line.name}${line.optionLabel ? " (" + line.optionLabel + ")" : ""} × ${new Intl.NumberFormat("fa-IR").format(line.quantity)}</span>
-          <span>${formatPrice(line.unitPrice * line.quantity)}</span>
         </li>`
         )
         .join("");
@@ -50,7 +49,6 @@
             <p class="order-table">میز ${order.tableNumber}${order.trackingCode ? ` · <span dir="ltr">${order.trackingCode}</span>` : ""}</p>
             <p class="order-meta">${formatTime(order.createdAt)}</p>
           </div>
-          <strong>${formatPrice(order.total)}</strong>
         </div>
         <ul class="order-items">${itemsHtml}</ul>
         ${order.note ? `<p class="order-note">یادداشت: ${order.note}</p>` : ""}

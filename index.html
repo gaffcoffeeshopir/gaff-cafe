@@ -31,12 +31,36 @@
       <div class="ornament header-ornament" aria-hidden="true">
         <span></span><i></i><span></span>
       </div>
-      <p class="header-tag">منو را ورق بزن · سفارشت را ثبت کن</p>
+      <p class="header-tag">منو را ورق بزن</p>
     </header>
 
     <nav class="cat-nav" id="catNav" aria-label="دسته‌بندی منو"></nav>
 
     <main class="menu" id="menu"></main>
+
+    <section class="feedback-section" id="feedbackSection" aria-labelledby="feedbackTitle">
+      <header class="section-head">
+        <div class="section-label">
+          <h2 class="section-title" id="feedbackTitle">نظرات و انتقادات</h2>
+        </div>
+        <div class="ornament" aria-hidden="true">
+          <span></span><i></i><span></span>
+        </div>
+      </header>
+      <p class="feedback-lead">نظر یا انتقادتان را بنویسید. فقط مدیریت کافه آن را می‌بیند.</p>
+      <form class="feedback-form" id="feedbackForm">
+        <label class="field">
+          <span>نام (اختیاری)</span>
+          <input type="text" id="feedbackName" maxlength="80" autocomplete="name" placeholder="مثلاً میهمان میز ۴" />
+        </label>
+        <label class="field">
+          <span>نظر یا انتقاد</span>
+          <textarea id="feedbackMessage" rows="4" required maxlength="2000" placeholder="هرچه دوست دارید بگویید…"></textarea>
+        </label>
+        <button type="submit" class="btn-primary" id="feedbackSubmit">ارسال نظر</button>
+        <p class="feedback-hint" id="feedbackHint" hidden></p>
+      </form>
+    </section>
 
     <footer class="site-footer" id="siteFooter">
       <p class="footer-brand">GAFF</p>
@@ -52,7 +76,6 @@
     <button type="button" class="cart-fab" id="cartFab" hidden aria-label="سبد سفارش">
       <span class="cart-fab-count" id="cartCount">0</span>
       <span>سبد سفارش</span>
-      <span class="cart-fab-total" id="cartFabTotal"></span>
     </button>
 
     <div class="drawer-overlay" id="drawerOverlay" hidden></div>
@@ -71,10 +94,6 @@
           <span>توضیحات (اختیاری)</span>
           <textarea id="orderNote" rows="2" placeholder="بدون شکر، کم‌شیر، ..."></textarea>
         </label>
-        <div class="total-row">
-          <span>جمع</span>
-          <strong id="cartTotal">۰ تومان</strong>
-        </div>
         <button type="button" class="btn-primary" id="submitOrder">ثبت سفارش</button>
         <p class="hint">شماره میز را درست وارد کنید. سفارش مستقیم برای کافه ارسال می‌شود.</p>
       </div>
@@ -107,8 +126,78 @@
       </div>
     </dialog>
 
+    <dialog class="modal customer-gate" id="customerGate">
+      <div class="modal-card gate-card">
+        <div id="gatePhoneStep">
+          <p class="confirm-eyebrow">کافه گاف</p>
+          <h3 class="confirm-title">خوش آمدید</h3>
+          <p class="gate-lead">برای ورود، شماره موبایل خود را وارد کنید.</p>
+          <form id="gatePhoneForm" class="gate-form">
+            <label class="field">
+              <span>شماره موبایل</span>
+              <input
+                type="tel"
+                id="gatePhone"
+                inputmode="numeric"
+                autocomplete="tel"
+                maxlength="11"
+                placeholder="0912xxxxxxx"
+                required
+                dir="ltr"
+              />
+            </label>
+            <button type="submit" class="btn-primary">ادامه</button>
+            <p class="feedback-hint is-error" id="gatePhoneError" hidden></p>
+          </form>
+        </div>
+
+        <div id="gateProfileStep" hidden>
+          <p class="confirm-eyebrow">پروفایل شما</p>
+          <h3 class="confirm-title">کمی بیشتر بشناسم‌تان</h3>
+          <p class="gate-lead">نام اختیاری است. تاریخ تولد شمسی برای هدیهٔ روز تولدتان است.</p>
+          <form id="gateProfileForm" class="gate-form">
+            <label class="field">
+              <span>نام (اختیاری)</span>
+              <input type="text" id="gateName" maxlength="80" autocomplete="name" placeholder="مثلاً سارا" />
+            </label>
+            <p class="field-label">تاریخ تولد (شمسی)</p>
+            <div class="gate-birth-row">
+              <label class="field">
+                <span class="visually-hidden">سال</span>
+                <select id="gateBirthYear" required>
+                  <option value="">سال</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="visually-hidden">ماه</span>
+                <select id="gateBirthMonth" required>
+                  <option value="">ماه</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="visually-hidden">روز</span>
+                <select id="gateBirthDay" required>
+                  <option value="">روز</option>
+                </select>
+              </label>
+            </div>
+            <button type="submit" class="btn-primary">ثبت و ورود به منو</button>
+            <p class="feedback-hint is-error" id="gateProfileError" hidden></p>
+          </form>
+        </div>
+
+        <div id="gateWelcomeStep" hidden>
+          <p class="confirm-eyebrow">گاف</p>
+          <h3 class="confirm-title" id="gateWelcomeText">خوش آمدید</h3>
+          <p class="gate-lead">منوی امروز آماده است.</p>
+          <button type="button" class="btn-primary" id="gateWelcomeContinue">بزن بریم</button>
+        </div>
+      </div>
+    </dialog>
+
     <script src="js/menu-data.js"></script>
     <script src="js/cart.js"></script>
+    <script src="js/customer-gate.js"></script>
     <script src="js/app.js"></script>
     <script src="js/scroll-rail.js"></script>
   </body>

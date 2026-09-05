@@ -2,26 +2,29 @@
   const box = document.getElementById("qrBox");
   const urlEl = document.getElementById("qrUrl");
 
-  // آدرس منوی مشتری — بعد از آپلود سایت، همین صفحه را باز کنید تا QR درست شود
-  const menuUrl = new URL("index.html", window.location.href).href;
+  // آدرس ثابت منوی مشتری برای چاپ روی میز
+  const menuUrl = "https://gaff-cafe.onrender.com/";
 
   urlEl.textContent = menuUrl;
 
   if (typeof QRCode === "undefined") {
-    box.innerHTML = "<p>بارگذاری QR ناموفق بود. آدرس منو را دستی چاپ کنید.</p>";
+    box.innerHTML =
+      '<img src="img/gaff-menu-qr.png" alt="QR منوی کافه گاف" width="220" height="220" />';
     return;
   }
 
   QRCode.toCanvas(
     menuUrl,
     {
-      width: 220,
-      margin: 1,
+      width: 280,
+      margin: 2,
       color: { dark: "#1a2218", light: "#ffffff" },
+      errorCorrectionLevel: "M",
     },
     function (err, canvas) {
       if (err) {
-        box.textContent = "خطا در ساخت QR";
+        box.innerHTML =
+          '<img src="img/gaff-menu-qr.png" alt="QR منوی کافه گاف" width="220" height="220" />';
         return;
       }
       box.innerHTML = "";

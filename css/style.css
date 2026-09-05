@@ -678,6 +678,14 @@ body.is-ready .header-tag {
   transform: scale(0.94);
 }
 
+/* سفارش موقتاً خاموش — کد سبد حذف نشده؛ ORDERING_ENABLED را true کن */
+body.ordering-off .add-btn,
+body.ordering-off .cart-fab,
+body.ordering-off .drawer,
+body.ordering-off .drawer-overlay {
+  display: none !important;
+}
+
 /* —— Footer —— */
 .site-footer {
   text-align: center;
@@ -685,6 +693,123 @@ body.is-ready .header-tag {
   color: var(--ink-muted);
   max-width: 420px;
   margin: 0 auto;
+}
+
+/* —— Feedback form (customer) —— */
+.feedback-section {
+  max-width: 420px;
+  margin: 0.5rem auto 0;
+  padding: 0 1rem 1.5rem;
+}
+
+.feedback-section .section-head {
+  margin-bottom: 0.65rem;
+}
+
+.feedback-lead {
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.feedback-form {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1.5px solid rgba(26, 34, 24, 0.2);
+  background: rgba(242, 245, 235, 0.55);
+}
+
+.feedback-form .btn-primary {
+  width: 100%;
+}
+
+.feedback-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sage-deep);
+  text-align: center;
+}
+
+.feedback-hint.is-error {
+  color: var(--danger);
+}
+
+/* —— Customer entry gate —— */
+.customer-gate {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: min(400px, calc(100vw - 1.5rem));
+}
+
+.customer-gate::backdrop {
+  background: rgba(26, 34, 24, 0.62);
+  backdrop-filter: blur(2px);
+}
+
+.gate-card {
+  width: min(400px, 100%);
+  padding: 1.25rem 1.1rem 1.15rem;
+}
+
+.gate-lead {
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.gate-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.gate-form .btn-primary {
+  width: 100%;
+}
+
+.gate-birth-row {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 0.85fr;
+  gap: 0.45rem;
+}
+
+.gate-birth-row select {
+  width: 100%;
+  min-height: 44px;
+  border: 1.5px solid rgba(26, 34, 24, 0.22);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.45rem 0.5rem;
+  font: inherit;
+}
+
+.field-label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.gate-open {
+  overflow: hidden;
 }
 
 .footer-brand {

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#8fa37a" />
+    <title>مشتریان | گاف</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/local-fonts.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+  <body class="admin-body">
+    <div class="bg-texture" aria-hidden="true"></div>
+
+    <section class="admin-login" id="loginView">
+      <div class="admin-card admin-login-card">
+        <p class="admin-brand">GAFF</p>
+        <h1>مشتریان</h1>
+        <p class="admin-lead">ورود فقط برای مدیریت کافه</p>
+        <label class="field">
+          <span>رمز ورود</span>
+          <input type="password" id="adminPassword" autocomplete="current-password" />
+        </label>
+        <button type="button" class="btn-primary admin-full-btn" id="loginBtn">ورود</button>
+        <p class="admin-error" id="loginError" hidden></p>
+        <p class="admin-hint" style="margin-top: 1rem">
+          <a href="/gaff-desk">بازگشت به مدیریت منو</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="admin-app" id="appView" hidden>
+      <header class="admin-header">
+        <div class="admin-header-text">
+          <p class="admin-brand">GAFF Desk</p>
+          <h1>مشتریان</h1>
+        </div>
+        <div class="admin-header-actions">
+          <a class="btn-ghost admin-nav-link" href="/gaff-desk">منو</a>
+          <a class="btn-ghost admin-nav-link" href="/gaff-feedback">نظریات</a>
+          <button type="button" class="btn-ghost admin-logout" id="logoutBtn">خروج</button>
+        </div>
+      </header>
+
+      <p class="admin-lead feedback-admin-lead">
+        شماره، نام، تاریخ تولد شمسی، نظرات و سفارش‌های هر مشتری برای پیامک و باشگاه مشتریان.
+      </p>
+
+      <div class="admin-list-meta">
+        <h2>لیست مشتریان</h2>
+        <span id="listCount"></span>
+      </div>
+      <div class="admin-list" id="customerList"></div>
+
+      <div class="admin-card customer-detail" id="customerDetail" hidden>
+        <div class="admin-list-meta">
+          <h2 id="detailTitle">جزئیات مشتری</h2>
+          <button type="button" class="btn-ghost" id="closeDetail">بستن</button>
+        </div>
+        <div id="detailBody"></div>
+      </div>
+    </section>
+
+    <script src="js/admin-customers.js"></script>
+    <script src="js/scroll-rail.js"></script>
+  </body>
+</html>
