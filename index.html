@@ -128,12 +128,25 @@
 
     <dialog class="modal customer-gate" id="customerGate">
       <div class="modal-card gate-card">
-        <div id="gatePhoneStep">
-          <p class="confirm-eyebrow">کافه گاف</p>
-          <h3 class="confirm-title">خوش آمدید</h3>
-          <p class="gate-lead">برای ورود، شماره موبایل خود را وارد کنید.</p>
+        <div class="gate-brand" aria-hidden="true">
+          <span class="gate-brand-mark">GAFF</span>
+          <div class="ornament gate-ornament">
+            <span></span><i></i><span></span>
+          </div>
+        </div>
+
+        <div class="gate-steps" id="gateSteps" aria-hidden="true">
+          <span class="gate-step-dot is-active" data-step="phone"></span>
+          <span class="gate-step-dot" data-step="profile"></span>
+          <span class="gate-step-dot" data-step="welcome"></span>
+        </div>
+
+        <div class="gate-panel" id="gatePhoneStep">
+          <p class="gate-kicker">ورود به کافه گاف</p>
+          <h3 class="gate-title">شماره موبایل‌تان را وارد کنید</h3>
+          <p class="gate-lead">با شمارهٔ شما، سفارش‌ها و مناسبت‌های ویژه برایتان شخصی می‌شود.</p>
           <form id="gatePhoneForm" class="gate-form">
-            <label class="field">
+            <label class="field gate-field">
               <span>شماره موبایل</span>
               <input
                 type="tel"
@@ -141,56 +154,61 @@
                 inputmode="numeric"
                 autocomplete="tel"
                 maxlength="11"
-                placeholder="0912xxxxxxx"
+                placeholder="09xxxxxxxxx"
                 required
                 dir="ltr"
               />
             </label>
-            <button type="submit" class="btn-primary">ادامه</button>
-            <p class="feedback-hint is-error" id="gatePhoneError" hidden></p>
+            <button type="submit" class="btn-primary gate-btn">ادامه</button>
+            <p class="gate-error" id="gatePhoneError" hidden></p>
           </form>
         </div>
 
-        <div id="gateProfileStep" hidden>
-          <p class="confirm-eyebrow">پروفایل شما</p>
-          <h3 class="confirm-title">کمی بیشتر بشناسم‌تان</h3>
-          <p class="gate-lead">نام اختیاری است. تاریخ تولد شمسی برای هدیهٔ روز تولدتان است.</p>
+        <div class="gate-panel" id="gateProfileStep" hidden>
+          <p class="gate-kicker">پروفایل مهمان</p>
+          <h3 class="gate-title">خوشحال می‌شویم بشناسیم‌تان</h3>
+          <p class="gate-lead">نام اختیاری است. تاریخ تولد شمسی برای هدیهٔ روز تولدتان نزد ما می‌ماند.</p>
           <form id="gateProfileForm" class="gate-form">
-            <label class="field">
-              <span>نام (اختیاری)</span>
+            <label class="field gate-field">
+              <span>نام <em>(اختیاری)</em></span>
               <input type="text" id="gateName" maxlength="80" autocomplete="name" placeholder="مثلاً سارا" />
             </label>
-            <p class="field-label">تاریخ تولد (شمسی)</p>
-            <div class="gate-birth-row">
-              <label class="field">
-                <span class="visually-hidden">سال</span>
-                <select id="gateBirthYear" required>
-                  <option value="">سال</option>
-                </select>
-              </label>
-              <label class="field">
-                <span class="visually-hidden">ماه</span>
-                <select id="gateBirthMonth" required>
-                  <option value="">ماه</option>
-                </select>
-              </label>
-              <label class="field">
-                <span class="visually-hidden">روز</span>
-                <select id="gateBirthDay" required>
-                  <option value="">روز</option>
-                </select>
-              </label>
+            <div class="gate-birth">
+              <p class="gate-birth-label">تاریخ تولد شمسی</p>
+              <div class="gate-birth-row">
+                <label class="field gate-field">
+                  <span class="visually-hidden">سال</span>
+                  <select id="gateBirthYear" required>
+                    <option value="">سال</option>
+                  </select>
+                </label>
+                <label class="field gate-field">
+                  <span class="visually-hidden">ماه</span>
+                  <select id="gateBirthMonth" required>
+                    <option value="">ماه</option>
+                  </select>
+                </label>
+                <label class="field gate-field">
+                  <span class="visually-hidden">روز</span>
+                  <select id="gateBirthDay" required>
+                    <option value="">روز</option>
+                  </select>
+                </label>
+              </div>
             </div>
-            <button type="submit" class="btn-primary">ثبت و ورود به منو</button>
-            <p class="feedback-hint is-error" id="gateProfileError" hidden></p>
+            <button type="submit" class="btn-primary gate-btn">ورود به منو</button>
+            <p class="gate-error" id="gateProfileError" hidden></p>
           </form>
         </div>
 
-        <div id="gateWelcomeStep" hidden>
-          <p class="confirm-eyebrow">گاف</p>
-          <h3 class="confirm-title" id="gateWelcomeText">خوش آمدید</h3>
-          <p class="gate-lead">منوی امروز آماده است.</p>
-          <button type="button" class="btn-primary" id="gateWelcomeContinue">بزن بریم</button>
+        <div class="gate-panel gate-welcome" id="gateWelcomeStep" hidden>
+          <p class="gate-kicker">دوباره خوش آمدید</p>
+          <h3 class="gate-title" id="gateWelcomeText">
+            <span class="gate-welcome-line">سلام</span>
+            <span class="gate-welcome-name" id="gateWelcomeName"></span>
+          </h3>
+          <p class="gate-lead" id="gateWelcomeLead">منوی امروز آماده است. نوش جان.</p>
+          <button type="button" class="btn-primary gate-btn" id="gateWelcomeContinue">مشاهده منو</button>
         </div>
       </div>
     </dialog>

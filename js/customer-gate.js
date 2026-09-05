@@ -84,6 +84,10 @@ function initCustomerGate(options) {
     return;
   }
 
+  const welcomeNameEl = document.getElementById("gateWelcomeName");
+  const welcomeLead = document.getElementById("gateWelcomeLead");
+  const stepDots = gate.querySelectorAll(".gate-step-dot");
+
   let pendingPhone = "";
 
   function fillYears() {
@@ -122,10 +126,29 @@ function initCustomerGate(options) {
     if (current && Number(current) <= meta.days) daySelect.value = current;
   }
 
+  function updateStepDots(step) {
+    const order = ["phone", "profile", "welcome"];
+    const idx = order.indexOf(step);
+    stepDots.forEach((dot) => {
+      const key = dot.dataset.step;
+      const di = order.indexOf(key);
+      dot.classList.toggle("is-active", key === step);
+      dot.classList.toggle("is-done", di > -1 && di < idx);
+    });
+  }
+
   function showStep(step) {
     phoneStep.hidden = step !== "phone";
     profileStep.hidden = step !== "profile";
     welcomeStep.hidden = step !== "welcome";
+    updateStepDots(step);
+
+    const active = step === "phone" ? phoneStep : step === "profile" ? profileStep : welcomeStep;
+    if (active) {
+      active.style.animation = "none";
+      void active.offsetWidth;
+      active.style.animation = "";
+    }
   }
 
   function openGate() {
@@ -149,7 +172,14 @@ function initCustomerGate(options) {
   function finish(customer, welcomeName) {
     saveCustomerSession(customer);
     if (welcomeName) {
-      welcomeText.textContent = "خوش آمدید، " + welcomeName + " عزیز";
+      if (welcomeNameEl) {
+        welcomeNameEl.textContent = welcomeName + " عزیز";
+      } else if (welcomeText) {
+        welcomeText.textContent = "سلام، " + welcomeName + " عزیز";
+      }
+      if (welcomeLead) {
+        welcomeLead.textContent = "از دیدنتان خوشحالیم. منوی امروز آماده است.";
+      }
       showStep("welcome");
       openGate();
       return;
