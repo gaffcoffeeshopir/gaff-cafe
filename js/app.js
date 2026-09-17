@@ -2,6 +2,12 @@
   // سوئیچ سفارش: ORDERING_ENABLED در js/menu-data.js
   const orderingOn = typeof ORDERING_ENABLED === "undefined" ? true : ORDERING_ENABLED;
 
+  // منو فقط بعد از شناسایی مشتری
+  if (typeof getCustomerPhone === "function" && !getCustomerPhone()) {
+    window.location.replace("/");
+    return;
+  }
+
   const menuEl = document.getElementById("menu");
   const catNav = document.getElementById("catNav");
   const cartFab = document.getElementById("cartFab");
@@ -506,6 +512,7 @@
   }
 
   async function boot() {
+    // در صفحه منو دیگر گیت نداریم
     const cached = loadMenuCache();
     if (cached) {
       applyMenuData(cached);
@@ -518,29 +525,14 @@
     updateCartUI();
     wireFeedbackForm();
 
-    const startMenu = async () => {
-      try {
-        await loadMenuFromServer();
-        renderNav();
-        renderMenu();
-        observeMenuSections();
-      } catch (err) {
-        console.error(err);
-        if (!cached) showToast("خطا در بارگذاری منو");
-      }
-    };
-
-    if (typeof initCustomerGate === "function") {
-      initCustomerGate({
-        showToast,
-        onReady: function () {
-          startMenu();
-        },
-      });
-      // منو را هم‌زمان لود کن؛ گیت جلوی تعامل را می‌گیرد
-      startMenu();
-    } else {
-      await startMenu();
+    try {
+      await loadMenuFromServer();
+      renderNav();
+      renderMenu();
+      observeMenuSections();
+    } catch (err) {
+      console.error(err);
+      if (!cached) showToast("خطا در بارگذاری منو");
     }
   }
 

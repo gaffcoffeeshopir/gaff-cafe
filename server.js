@@ -40,6 +40,15 @@ const {
   writeMenu,
   saveSticker,
   restoreStickersToDisk,
+  HOME_HERO_SLOT,
+  isValidHomeSlot,
+  isGallerySlot,
+  newGallerySlot,
+  partitionHomeImages,
+  listHomeImages,
+  saveHomeImage,
+  deleteHomeImage,
+  restoreHomeImagesToDisk,
   createOrder,
   closeShift,
   formatShiftReceipt,
@@ -62,7 +71,9 @@ const root = __dirname;
 app.use(express.json({ limit: "3mb" }));
 
 const ICONS_DIR = path.join(__dirname, "img", "icons");
+const HOME_IMG_DIR = path.join(__dirname, "img", "home");
 const ALLOWED_STICKER_EXT = new Set([".svg", ".png", ".webp", ".jpg", ".jpeg"]);
+const ALLOWED_HOME_EXT = new Set([".png", ".webp", ".jpg", ".jpeg"]);
 
 function listStickers() {
   if (!fs.existsSync(ICONS_DIR)) return [];
@@ -74,6 +85,16 @@ function listStickers() {
       file: name,
       path: "img/icons/" + name,
     }));
+}
+
+function unlinkHomeFile(fileName) {
+  if (!fileName) return;
+  const abs = path.join(HOME_IMG_DIR, path.basename(String(fileName)));
+  try {
+    if (fs.existsSync(abs)) fs.unlinkSync(abs);
+  } catch {
+    /* ignore */
+  }
 }
 
 function isSafeIconPath(iconPath) {
@@ -187,7 +208,7 @@ function telegramApi(method, body) {
 
 function botMenuKeyboard() {
   return {
-    inline_keyboard: [[{ text: "☕ باز کردن منوی دیجیتال", url: SITE_URL }]],
+    inline_keyboard: [[{ text: "☕ باز کردن سایت کافه", url: SITE_URL }]],
   };
 }
 
@@ -418,6 +439,116 @@ app.post("/api/admin/stickers", requireAdmin, async (req, res) => {
 
     const iconPath = "img/icons/" + file;
     res.json({ ok: true, sticker: { file, path: iconPath } });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/home-images", async (_req, res) => {
+  try {
+    const images = await listHomeImages();
+    const { hero, gallery } = partitionHomeImages(images);
+    res.json({ ok: true, hero, gallery, images });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/admin/home-images", requireAdmin, async (_req, res) => {
+  try {
+    const images = await listHomeImages();
+    const { hero, gallery } = partitionHomeImages(images);
+    res.json({ ok: true, hero, gallery, images });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post("/api/admin/home-images", requireAdmin, async (req, res) => {
+  try {
+    let slot = String((req.body && req.body.slot) || "").trim();
+    const kind = String((req.body && req.body.kind) || "").trim().toLowerCase();
+
+    if (!slot || slot === "new" || slot === "gallery") {
+      slot = newGallerySlot();
+    } else if (kind === "gallery" && !isGallerySlot(slot) && slot !== HOME_HERO_SLOT) {
+      slot = newGallerySlot();
+    }
+
+    if (slot !== HOME_HERO_SLOT && !isGallerySlot(slot)) {
+      return res.status(400).json({ ok: false, error: "جایگاه عکس نامعتبر است" });
+    }
+    if (!isValidHomeSlot(slot)) {
+      return res.status(400).json({ ok: false, error: "جایگاه عکس نامعتبر است" });
+    }
+
+    const nameRaw = String((req.body && req.body.name) || slot).trim();
+    const caption = String((req.body && req.body.caption) || "").trim().slice(0, 80);
+    const dataUrl = String((req.body && req.body.data) || "");
+    const match = /^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i.exec(dataUrl);
+    if (!match) {
+      return res.status(400).json({ ok: false, error: "فایل عکس نامعتبر است (PNG، JPG یا WebP)" });
+    }
+
+    let ext = match[1].toLowerCase();
+    if (ext === "jpeg") ext = "jpg";
+    if (!ALLOWED_HOME_EXT.has("." + ext)) {
+      return res.status(400).json({ ok: false, error: "فرمت عکس پشتیبانی نمی‌شود" });
+    }
+
+    const mimeMap = {
+      png: "image/png",
+      jpg: "image/jpeg",
+      webp: "image/webp",
+    };
+
+    const safeBase =
+      nameRaw
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^\w\u0600-\u06FF-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 40) || slot;
+
+    const buffer = Buffer.from(match[2], "base64");
+    if (buffer.length > 2.6 * 1024 * 1024) {
+      return res.status(400).json({ ok: false, error: "حجم عکس حداکثر ۲٫۵ مگابایت باشد" });
+    }
+
+    fs.mkdirSync(HOME_IMG_DIR, { recursive: true });
+    const file = `${slot}-${safeBase}-${Date.now().toString(36).slice(-5)}.${ext}`;
+    const abs = path.join(HOME_IMG_DIR, file);
+    fs.writeFileSync(abs, buffer);
+
+    const oldFile = await saveHomeImage(slot, file, mimeMap[ext], buffer, caption);
+    if (oldFile && oldFile !== file) unlinkHomeFile(oldFile);
+
+    const images = await listHomeImages();
+    const image = images.find((img) => img.slot === slot) || {
+      slot,
+      file,
+      path: "img/home/" + file,
+      caption,
+      mime: mimeMap[ext],
+      kind: slot === HOME_HERO_SLOT ? "hero" : "gallery",
+    };
+
+    res.json({ ok: true, image });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete("/api/admin/home-images/:slot", requireAdmin, async (req, res) => {
+  try {
+    const slot = String(req.params.slot || "").trim();
+    if (!isValidHomeSlot(slot)) {
+      return res.status(400).json({ ok: false, error: "جایگاه عکس نامعتبر است" });
+    }
+    const oldFile = await deleteHomeImage(slot);
+    unlinkHomeFile(oldFile);
+    res.json({ ok: true, slot });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -783,9 +914,17 @@ app.get("/api/admin/customers/:phone", requireAdmin, async (req, res) => {
   }
 });
 
+app.get("/menu", (_req, res) => {
+  res.sendFile(path.join(root, "menu.html"));
+});
+
 /* مسیر مخفی پنل — در سایت مشتری لینک نمی‌شود */
 app.get("/gaff-desk", (_req, res) => {
   res.sendFile(path.join(root, "gaff-desk.html"));
+});
+
+app.get("/gaff-home", (_req, res) => {
+  res.sendFile(path.join(root, "gaff-home.html"));
 });
 
 app.get("/gaff-feedback", (_req, res) => {
@@ -804,6 +943,14 @@ app.use(
   "/vendor/fonts/cormorant",
   express.static(path.join(__dirname, "node_modules/@fontsource/cormorant-garamond"))
 );
+app.use(
+  "/vendor/fonts/amiri",
+  express.static(path.join(__dirname, "node_modules/@fontsource/amiri"))
+);
+app.use(
+  "/vendor/fonts/noto-naskh",
+  express.static(path.join(__dirname, "node_modules/@fontsource/noto-naskh-arabic"))
+);
 
 app.use(express.static(root));
 
@@ -817,8 +964,10 @@ async function boot() {
   try {
     const dbInfo = await initMenuDb();
     const restored = await restoreStickersToDisk(ICONS_DIR);
+    const restoredHome = await restoreHomeImagesToDisk(HOME_IMG_DIR);
     console.log(`Database: ${dbInfo}`);
     if (restored) console.log(`Stickers restored from DB: ${restored}`);
+    if (restoredHome) console.log(`Home images restored from DB: ${restoredHome}`);
     const persistence = getPersistenceInfo();
     if (!persistence.persistent) {
       console.warn("⚠️  " + persistence.warning);

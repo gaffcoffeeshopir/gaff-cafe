@@ -8,3 +8,5 @@ node_modules/
 data/gaff.db
 data/gaff.db-*
 data/backups/
+img/home/*
+!img/home/.gitkeep

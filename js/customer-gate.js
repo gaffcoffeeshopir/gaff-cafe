@@ -1,6 +1,7 @@
 /* شناسایی مشتری روی ورود — شماره / خوش‌آمد / نام + تولد شمسی */
 
 const CUSTOMER_STORAGE_KEY = "gaff-customer-v1";
+const WELCOME_SHOWN_KEY = "gaff-welcome-shown-v1";
 
 const JALALI_MONTHS = [
   { value: 1, label: "فروردین", days: 31 },
@@ -48,6 +49,25 @@ function saveCustomerSession(customer) {
 function getCustomerPhone() {
   const session = loadCustomerSession();
   return session && session.phone ? session.phone : "";
+}
+
+function wasWelcomeShown(phone) {
+  try {
+    const raw = sessionStorage.getItem(WELCOME_SHOWN_KEY);
+    if (!raw) return false;
+    if (!phone) return raw === "1";
+    return raw === phone || raw === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markWelcomeShown(phone) {
+  try {
+    sessionStorage.setItem(WELCOME_SHOWN_KEY, phone || "1");
+  } catch {
+    /* ignore */
+  }
 }
 
 function normalizePhoneClient(raw) {
@@ -171,7 +191,8 @@ function initCustomerGate(options) {
 
   function finish(customer, welcomeName) {
     saveCustomerSession(customer);
-    if (welcomeName) {
+    if (welcomeName && !wasWelcomeShown(customer.phone)) {
+      markWelcomeShown(customer.phone);
       if (welcomeNameEl) {
         welcomeNameEl.textContent = welcomeName + " عزیز";
       } else if (welcomeText) {
@@ -292,8 +313,10 @@ function initCustomerGate(options) {
 
   if (welcomeContinue) {
     welcomeContinue.addEventListener("click", () => {
+      const session = loadCustomerSession();
+      markWelcomeShown(session && session.phone);
       closeGate();
-      onReady(loadCustomerSession());
+      onReady(session);
     });
   }
 

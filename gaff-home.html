@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="robots" content="noindex,nofollow" />
     <meta name="theme-color" content="#8fa37a" />
-    <title>نظریات و انتقادات | گاف</title>
+    <title>عکس‌های صفحه اصلی | گاف</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/local-fonts.css" />
     <link rel="stylesheet" href="css/style.css" />
@@ -17,7 +17,7 @@
     <section class="admin-login" id="loginView">
       <div class="admin-card admin-login-card">
         <p class="admin-brand">GAFF</p>
-        <h1>نظریات و انتقادات</h1>
+        <h1>عکس‌های صفحه اصلی</h1>
         <p class="admin-lead">ورود فقط برای مدیریت کافه</p>
         <label class="field">
           <span>رمز ورود</span>
@@ -35,28 +35,27 @@
       <header class="admin-header">
         <div class="admin-header-text">
           <p class="admin-brand">GAFF Desk</p>
-          <h1>نظریات و انتقادات</h1>
+          <h1>عکس‌های صفحه اصلی</h1>
         </div>
         <div class="admin-header-actions">
           <a class="btn-ghost admin-nav-link" href="/gaff-desk">منو</a>
-          <a class="btn-ghost admin-nav-link" href="/gaff-home">صفحه اصلی</a>
           <a class="btn-ghost admin-nav-link" href="/gaff-customers">مشتریان</a>
+          <a class="btn-ghost admin-nav-link" href="/gaff-feedback">نظریات</a>
           <button type="button" class="btn-ghost admin-logout" id="logoutBtn">خروج</button>
         </div>
       </header>
 
       <p class="admin-lead feedback-admin-lead">
-        این نظرات فقط برای شماست و در منوی مشتری نمایش داده نمی‌شوند.
+        عکس بالای صفحه و گالری. هر چقدر بخواهید عکس گالری اضافه کنید؛ در سایت قاب ۴تایی است و هر ۳ ثانیه یکی جابه‌جا می‌شود.
+        فایل‌ها در دیتابیس می‌مانند تا با ریستارت پاک نشوند.
       </p>
+      <p class="admin-hint" style="margin-bottom: 1rem">حداکثر ۲٫۵ مگابایت برای هر عکس — JPG، PNG یا WebP</p>
 
-      <div class="admin-list-meta">
-        <h2>نظرات دریافتی</h2>
-        <span id="listCount"></span>
-      </div>
-      <div class="admin-list" id="feedbackList"></div>
+      <div class="home-admin-grid" id="homeSlots"></div>
+      <p class="admin-error" id="homeError" hidden></p>
     </section>
 
-    <script src="js/admin-feedback.js"></script>
+    <script src="js/admin-home.js"></script>
     <script src="js/scroll-rail.js"></script>
   </body>
 </html>

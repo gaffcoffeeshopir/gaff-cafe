@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#8fa37a" />
-    <meta name="description" content="کافه گاف — منوی دیجیتال و سفارش" />
+    <meta name="description" content="کافه گاف — قهوه آرام، حال خوب، کرج" />
     <title>کافه گاف | GAFF</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="css/local-fonts.css" />
@@ -14,117 +14,125 @@
       document.documentElement.classList.add("is-ready");
     </script>
   </head>
-  <body class="is-ready">
+  <body class="is-ready home-page home-locked">
     <div class="bg-texture" aria-hidden="true"></div>
 
-    <header class="site-header">
-      <p class="slogan">قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی ;)</p>
-      <div class="brand">
-        <img
-          class="logo"
-          src="img/logo.png?v=2"
-          alt="کافه گاف — GAFF Coffee with a good mood"
-          width="280"
-          height="340"
-        />
-      </div>
-      <div class="ornament header-ornament" aria-hidden="true">
-        <span></span><i></i><span></span>
-      </div>
-      <p class="header-tag">منو را ورق بزن</p>
-    </header>
-
-    <nav class="cat-nav" id="catNav" aria-label="دسته‌بندی منو"></nav>
-
-    <main class="menu" id="menu"></main>
-
-    <section class="feedback-section" id="feedbackSection" aria-labelledby="feedbackTitle">
-      <header class="section-head">
-        <div class="section-label">
-          <h2 class="section-title" id="feedbackTitle">نظرات و انتقادات</h2>
+    <main class="home" id="homeMain" hidden>
+      <section class="home-hero">
+        <div class="home-hero-media" aria-hidden="true">
+          <div class="home-hero-placeholder" id="homeHeroPlaceholder"></div>
+          <img class="home-hero-photo" id="homeHeroPhoto" alt="" hidden />
+          <div class="home-hero-wash"></div>
+          <div class="home-hero-grain"></div>
         </div>
-        <div class="ornament" aria-hidden="true">
+        <div class="home-hero-content">
+          <p class="home-kicker home-reveal" style="--d:0s">کرج · دانشکده</p>
+          <p class="home-brand-mark home-reveal" style="--d:0.06s">GAFF</p>
+          <img
+            class="home-logo home-reveal"
+            style="--d:0.12s"
+            src="img/logo.png?v=2"
+            alt="کافه گاف — GAFF"
+            width="220"
+            height="270"
+          />
+          <p class="home-slogan home-reveal" style="--d:0.18s">
+            قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی ;)
+          </p>
+          <p class="home-hero-text home-reveal" style="--d:0.24s">
+            مکث کوتاه، فنجان گرم، حال خوب.
+          </p>
+          <div class="home-cta-row home-reveal" style="--d:0.3s">
+            <a class="home-cta home-cta-primary" href="/menu">منوی دیجیتال</a>
+            <a
+              class="home-cta home-cta-ig"
+              id="homeInstagramTop"
+              href="https://instagram.com/cofe_gaff"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              اینستاگرام
+            </a>
+          </div>
+          <p class="home-scroll-hint home-reveal" style="--d:0.4s" aria-hidden="true">ورق بزن</p>
+        </div>
+      </section>
+
+      <a
+        class="home-ig-banner"
+        id="homeInstagram"
+        href="https://instagram.com/cofe_gaff"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="home-ig-banner-label">دنبال کنید</span>
+        <span class="home-ig-banner-handle" dir="ltr">@cofe_gaff</span>
+        <span class="home-ig-banner-action">
+          باز کردن اینستاگرام
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm5 4.5A4.5 4.5 0 1 0 16.5 12 4.5 4.5 0 0 0 12 7.5zm0 7.2A2.7 2.7 0 1 1 14.7 12 2.7 2.7 0 0 1 12 14.7zM17.8 6.2a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"/>
+          </svg>
+        </span>
+      </a>
+
+      <section class="home-gallery home-block" aria-labelledby="galleryTitle">
+        <header class="home-section-head">
+          <p class="home-section-kicker">Gallery</p>
+          <h2 id="galleryTitle">از فضای گاف</h2>
+          <div class="ornament home-ornament" aria-hidden="true">
+            <span></span><i></i><span></span>
+          </div>
+          <p id="homeGalleryLead">عکس‌های کافه و محصولات به‌زودی اینجا می‌نشینند.</p>
+        </header>
+        <div class="home-gallery-viewport" id="homeGalleryViewport">
+          <div class="home-gallery-rail" id="homeGallery"></div>
+        </div>
+      </section>
+
+      <section class="home-about home-block" aria-labelledby="aboutTitle">
+        <header class="home-section-head">
+          <p class="home-section-kicker">About</p>
+          <h2 id="aboutTitle">دربارهٔ گاف</h2>
+          <div class="ornament home-ornament" aria-hidden="true">
+            <span></span><i></i><span></span>
+          </div>
+        </header>
+        <p class="home-about-lead">
+          گاف گوشه‌ای آرام است؛ برای حرف زدن، کار کردن، یا فقط نشستن با یک فنجان قهوه.
+        </p>
+        <p class="home-about-text">
+          اینجا عجله جایی ندارد. عطر اسپرسو، نور ملایم و حال خوب مهمان‌ها فضای ما را می‌سازد —
+          از اولین سلام تا آخرین جرعه.
+        </p>
+        <div class="home-about-meta">
+          <p class="home-about-label">آدرس</p>
+          <p class="home-about-address">کرج، دانشکده، سازمان آب</p>
+          <div class="home-map-btns">
+            <a class="map-btn" id="homeGoogleMap" href="#" target="_blank" rel="noopener noreferrer">گوگل‌مپ</a>
+            <button type="button" class="map-btn" id="homeNeshan">نشان</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="home-final-cta home-block">
+        <p class="home-final-eyebrow">Menu</p>
+        <h2>منوی امروز گاف</h2>
+        <p>نوشیدنی‌ها و خوراکی‌ها را ببینید و انتخاب کنید.</p>
+        <a class="home-cta home-cta-primary home-cta-wide" href="/menu">ورود به منو</a>
+      </section>
+
+      <footer class="site-footer home-footer">
+        <p class="footer-brand">GAFF</p>
+        <p class="footer-tag">Slow Coffee · Good Times</p>
+        <div class="ornament footer-ornament" aria-hidden="true">
           <span></span><i></i><span></span>
         </div>
-      </header>
-      <p class="feedback-lead">نظر یا انتقادتان را بنویسید. فقط مدیریت کافه آن را می‌بیند.</p>
-      <form class="feedback-form" id="feedbackForm">
-        <label class="field">
-          <span>نام (اختیاری)</span>
-          <input type="text" id="feedbackName" maxlength="80" autocomplete="name" placeholder="مثلاً میهمان میز ۴" />
-        </label>
-        <label class="field">
-          <span>نظر یا انتقاد</span>
-          <textarea id="feedbackMessage" rows="4" required maxlength="2000" placeholder="هرچه دوست دارید بگویید…"></textarea>
-        </label>
-        <button type="submit" class="btn-primary" id="feedbackSubmit">ارسال نظر</button>
-        <p class="feedback-hint" id="feedbackHint" hidden></p>
-      </form>
-    </section>
-
-    <footer class="site-footer" id="siteFooter">
-      <p class="footer-brand">GAFF</p>
-      <p class="footer-tag">Slow Coffee · Good Times</p>
-      <div class="ornament footer-ornament" aria-hidden="true">
-        <span></span><i></i><span></span>
-      </div>
-      <ul class="footer-contacts" id="footerContacts"></ul>
-      <p class="footer-dev" id="footerDev"></p>
-      <p class="footer-copy">EST. 2026 · کافه گاف</p>
-    </footer>
-
-    <button type="button" class="cart-fab" id="cartFab" hidden aria-label="سبد سفارش">
-      <span class="cart-fab-count" id="cartCount">0</span>
-      <span>سبد سفارش</span>
-    </button>
-
-    <div class="drawer-overlay" id="drawerOverlay" hidden></div>
-    <aside class="drawer" id="cartDrawer" aria-hidden="true" aria-label="سبد سفارش">
-      <div class="drawer-head">
-        <h2>سفارش شما</h2>
-        <button type="button" class="icon-btn" id="closeCart" aria-label="بستن">×</button>
-      </div>
-      <div class="drawer-body" id="cartLines"></div>
-      <div class="drawer-foot">
-        <label class="field">
-          <span>شماره میز</span>
-          <input type="text" id="tableNumber" inputmode="numeric" placeholder="مثلاً ۴" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span>توضیحات (اختیاری)</span>
-          <textarea id="orderNote" rows="2" placeholder="بدون شکر، کم‌شیر، ..."></textarea>
-        </label>
-        <button type="button" class="btn-primary" id="submitOrder">ثبت سفارش</button>
-        <p class="hint">شماره میز را درست وارد کنید. سفارش مستقیم برای کافه ارسال می‌شود.</p>
-      </div>
-    </aside>
+        <p class="footer-copy">EST. 2026 · کافه گاف</p>
+        <p class="footer-dev" id="footerDev"></p>
+      </footer>
+    </main>
 
     <div class="toast" id="toast" hidden role="status"></div>
-
-    <dialog class="modal" id="optionModal">
-      <form method="dialog" class="modal-card" id="optionForm">
-        <h3 id="optionTitle"></h3>
-        <div id="optionList"></div>
-        <div class="modal-actions">
-          <button type="submit" class="btn-primary" value="add">افزودن به سبد</button>
-          <button type="submit" class="btn-ghost" value="cancel">انصراف</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog class="modal" id="confirmModal">
-      <div class="modal-card confirm-card">
-        <p class="confirm-eyebrow">گاف · سفارش شما رسید</p>
-        <h3 class="confirm-title">ممنون که گاف را انتخاب کردید</h3>
-        <p class="confirm-message" id="confirmMessage"></p>
-        <p class="confirm-code" id="confirmCode">G-42</p>
-        <p class="confirm-meta" id="confirmMeta"></p>
-        <p class="confirm-status" id="confirmStatus" hidden></p>
-        <div class="confirm-actions">
-          <button type="button" class="btn-primary" id="closeConfirm">باشه، منتظر می‌مانم</button>
-        </div>
-      </div>
-    </dialog>
 
     <dialog class="modal customer-gate" id="customerGate">
       <div class="modal-card gate-card">
@@ -196,7 +204,7 @@
                 </label>
               </div>
             </div>
-            <button type="submit" class="btn-primary gate-btn">ورود به منو</button>
+            <button type="submit" class="btn-primary gate-btn">ورود به کافه</button>
             <p class="gate-error" id="gateProfileError" hidden></p>
           </form>
         </div>
@@ -207,16 +215,15 @@
             <span class="gate-welcome-line">سلام</span>
             <span class="gate-welcome-name" id="gateWelcomeName"></span>
           </h3>
-          <p class="gate-lead" id="gateWelcomeLead">منوی امروز آماده است. نوش جان.</p>
-          <button type="button" class="btn-primary gate-btn" id="gateWelcomeContinue">مشاهده منو</button>
+          <p class="gate-lead" id="gateWelcomeLead">صفحهٔ اصلی گاف آماده‌ است.</p>
+          <button type="button" class="btn-primary gate-btn" id="gateWelcomeContinue">ورود به کافه</button>
         </div>
       </div>
     </dialog>
 
     <script src="js/menu-data.js"></script>
-    <script src="js/cart.js"></script>
     <script src="js/customer-gate.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/home.js"></script>
     <script src="js/scroll-rail.js"></script>
   </body>
 </html>
