@@ -1,6 +1,7 @@
 (function () {
   const TOKEN_KEY = "gaff-admin-token";
-  const MAX_BYTES = 2.5 * 1024 * 1024;
+  const MAX_IMAGE_BYTES = 2.5 * 1024 * 1024;
+  const MAX_VIDEO_BYTES = 10 * 1024 * 1024;
 
   const loginView = document.getElementById("loginView");
   const appView = document.getElementById("appView");
@@ -82,29 +83,50 @@
     });
   }
 
-  function previewHtml(img) {
+  function previewHtml(img, kind) {
     if (img && img.path) {
-      return `<img class="home-admin-preview" src="/${escapeHtml(img.path.replace(/^\//, ""))}" alt="" />`;
+      const src = "/" + escapeHtml(img.path.replace(/^\//, ""));
+      if (kind === "video") {
+        return `<video class="home-admin-preview" src="${src}" muted playsinline></video>`;
+      }
+      return `<img class="home-admin-preview" src="${src}" alt="" />`;
     }
-    return `<div class="home-admin-empty">عکسی نیست</div>`;
+    return `<div class="home-admin-empty">${kind === "video" ? "ویدیویی نیست" : "عکسی نیست"}</div>`;
   }
 
   function render(data) {
     if (!homeSlots) return;
     const hero = data.hero || null;
+    const video = data.video || null;
     const gallery = data.gallery || [];
 
     const heroCard = `
       <article class="admin-card home-admin-card" data-slot="hero" data-kind="hero">
         <h2>عکس بالای صفحه (هیرو)</h2>
-        <div class="home-admin-frame">${previewHtml(hero)}</div>
+        <div class="home-admin-frame">${previewHtml(hero, "hero")}</div>
         <label class="sticker-upload">
           <input type="file" class="home-file" accept="image/png,image/jpeg,image/webp" hidden />
           <span class="sticker-upload-btn">${hero ? "تعویض عکس" : "آپلود عکس"}</span>
-          <span class="sticker-upload-hint">JPG / PNG / WebP</span>
+          <span class="sticker-upload-hint">JPG / PNG / WebP · تا ۲٫۵ مگ</span>
         </label>
         <div class="admin-item-actions">
           ${hero ? `<button type="button" class="btn-danger home-delete">حذف</button>` : ""}
+        </div>
+        <p class="admin-hint home-slot-hint" hidden></p>
+      </article>`;
+
+    const videoCard = `
+      <article class="admin-card home-admin-card" data-slot="video" data-kind="video">
+        <h2>ویدیوی کوتاه صفحه اصلی</h2>
+        <div class="home-admin-frame home-admin-frame-wide">${previewHtml(video, "video")}</div>
+        <p class="admin-hint" style="margin-bottom:0.75rem">۱۰–۲۰ ثانیه، ترجیحاً بی‌صدا. MP4 یا WebM تا ۱۰ مگابایت.</p>
+        <label class="sticker-upload">
+          <input type="file" class="home-file" accept="video/mp4,video/webm" hidden />
+          <span class="sticker-upload-btn">${video ? "تعویض ویدیو" : "آپلود ویدیو"}</span>
+          <span class="sticker-upload-hint">MP4 / WebM</span>
+        </label>
+        <div class="admin-item-actions">
+          ${video ? `<button type="button" class="btn-danger home-delete">حذف</button>` : ""}
         </div>
         <p class="admin-hint home-slot-hint" hidden></p>
       </article>`;
@@ -115,7 +137,7 @@
         return `
         <article class="admin-card home-admin-card" data-slot="${escapeHtml(img.slot)}" data-kind="gallery">
           <h2>گالری ${toFaDigits(index + 1)}</h2>
-          <div class="home-admin-frame">${previewHtml(img)}</div>
+          <div class="home-admin-frame">${previewHtml(img, "gallery")}</div>
           <label class="field">
             <span>عنوان کوتاه (اختیاری)</span>
             <input type="text" class="home-caption" maxlength="80" value="${captionVal}" placeholder="مثلاً اسپرسو" />
@@ -149,7 +171,7 @@
         <p class="admin-hint home-slot-hint" hidden></p>
       </article>`;
 
-    homeSlots.innerHTML = heroCard + galleryCards + addCard;
+    homeSlots.innerHTML = heroCard + videoCard + galleryCards + addCard;
   }
 
   async function loadSlots() {
@@ -160,11 +182,15 @@
 
   async function uploadForCard(card, file) {
     const slot = card.getAttribute("data-slot");
+    const kind = card.getAttribute("data-kind") || "gallery";
     const hint = card.querySelector(".home-slot-hint");
     const captionInput = card.querySelector(".home-caption");
     if (!file) return;
-    if (file.size > MAX_BYTES) {
-      throw new Error("حجم عکس حداکثر ۲٫۵ مگابایت باشد");
+
+    const isVideo = kind === "video";
+    const max = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+    if (file.size > max) {
+      throw new Error(isVideo ? "حجم ویدیو حداکثر ۱۰ مگابایت باشد" : "حجم عکس حداکثر ۲٫۵ مگابایت باشد");
     }
     if (hint) {
       hint.hidden = false;
@@ -179,6 +205,9 @@
     if (slot === "new") {
       body.kind = "gallery";
       body.slot = "new";
+    } else if (isVideo) {
+      body.kind = "video";
+      body.slot = "video";
     } else {
       body.slot = slot;
     }
@@ -213,7 +242,7 @@
     if (!card) return;
     const slot = card.getAttribute("data-slot");
     if (!slot || slot === "new") return;
-    if (!confirm("این عکس حذف شود؟")) return;
+    if (!confirm("این فایل حذف شود؟")) return;
     try {
       showError("");
       await api("/api/admin/home-images/" + encodeURIComponent(slot), { method: "DELETE" });

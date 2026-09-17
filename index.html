@@ -18,7 +18,7 @@
     <div class="bg-texture" aria-hidden="true"></div>
 
     <main class="home" id="homeMain" hidden>
-      <section class="home-hero">
+      <section class="home-hero" id="homeHero">
         <div class="home-hero-media" aria-hidden="true">
           <div class="home-hero-placeholder" id="homeHeroPlaceholder"></div>
           <img class="home-hero-photo" id="homeHeroPhoto" alt="" hidden />
@@ -27,23 +27,23 @@
         </div>
         <div class="home-hero-content">
           <p class="home-kicker home-reveal" style="--d:0s">کرج · دانشکده</p>
-          <p class="home-brand-mark home-reveal" style="--d:0.06s">GAFF</p>
+          <p class="home-brand-mark home-reveal" style="--d:0.05s">GAFF</p>
           <img
             class="home-logo home-reveal"
-            style="--d:0.12s"
+            style="--d:0.1s"
             src="img/logo.png?v=2"
             alt="کافه گاف — GAFF"
             width="220"
             height="270"
           />
-          <p class="home-slogan home-reveal" style="--d:0.18s">
-            قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی ;)
+          <h1 class="home-slogan home-reveal" style="--d:0.16s">
+            قهوه‌های کافه گاف رو بخوری دیگه گاف نمیدی
+          </h1>
+          <p class="home-hero-text home-reveal" style="--d:0.22s">
+            گوشه‌ای آرام برای مکث، حرف زدن، و یک فنجان گرم.
           </p>
-          <p class="home-hero-text home-reveal" style="--d:0.24s">
-            مکث کوتاه، فنجان گرم، حال خوب.
-          </p>
-          <div class="home-cta-row home-reveal" style="--d:0.3s">
-            <a class="home-cta home-cta-primary" href="/menu">منوی دیجیتال</a>
+          <div class="home-cta-row home-reveal" style="--d:0.28s">
+            <a class="home-cta home-cta-primary" href="/menu">ورود به منو</a>
             <a
               class="home-cta home-cta-ig"
               id="homeInstagramTop"
@@ -51,10 +51,10 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              اینستاگرام
+              اینستاگرام گاف
             </a>
           </div>
-          <p class="home-scroll-hint home-reveal" style="--d:0.4s" aria-hidden="true">ورق بزن</p>
+          <p class="home-scroll-hint home-reveal" style="--d:0.38s" aria-hidden="true">ورق بزن</p>
         </div>
       </section>
 
@@ -74,6 +74,33 @@
           </svg>
         </span>
       </a>
+
+      <section class="home-film home-block" aria-labelledby="filmTitle">
+        <header class="home-section-head">
+          <p class="home-section-kicker">Film</p>
+          <h2 id="filmTitle">حال‌وهوای گاف</h2>
+          <div class="ornament home-ornament" aria-hidden="true">
+            <span></span><i></i><span></span>
+          </div>
+          <p id="homeFilmLead">یک تصویر متحرک کوتاه از فضای کافه — به‌زودی.</p>
+        </header>
+        <div class="home-film-stage" id="homeFilmStage">
+          <div class="home-film-placeholder" id="homeFilmPlaceholder">
+            <span class="home-film-mark">GAFF</span>
+            <p>ویدیوی کوتاه کافه</p>
+            <small>۱۰–۲۰ ثانیه · بی‌صدا · به‌زودی آپلود می‌شود</small>
+          </div>
+          <video
+            class="home-film-video"
+            id="homeFilmVideo"
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            hidden
+          ></video>
+        </div>
+      </section>
 
       <section class="home-gallery home-block" aria-labelledby="galleryTitle">
         <header class="home-section-head">

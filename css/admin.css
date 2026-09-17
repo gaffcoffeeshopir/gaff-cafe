@@ -694,8 +694,25 @@
   max-width: 220px;
 }
 
+.home-admin-frame-wide {
+  aspect-ratio: 16 / 9;
+  max-width: none;
+}
+
+.home-admin-frame video.home-admin-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #1a2218;
+}
+
 .home-admin-add {
   border-style: dashed;
+}
+
+.home-admin-card[data-slot="video"] {
+  grid-column: 1 / -1;
 }
 
 .home-admin-preview {

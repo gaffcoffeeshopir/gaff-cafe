@@ -251,18 +251,50 @@
     requestAnimationFrame(() => startGalleryCarousel(list.length));
   }
 
+  function applyHomeFilm(video) {
+    const stage = document.getElementById("homeFilmStage");
+    const el = document.getElementById("homeFilmVideo");
+    const lead = document.getElementById("homeFilmLead");
+    if (!stage || !el) return;
+
+    if (!video || !video.path) {
+      stage.classList.remove("has-video");
+      el.hidden = true;
+      el.removeAttribute("src");
+      el.load();
+      if (lead) lead.textContent = "یک تصویر متحرک کوتاه از فضای کافه — به‌زودی.";
+      return;
+    }
+
+    const src = "/" + String(video.path).replace(/^\//, "");
+    el.src = src;
+    el.hidden = false;
+    stage.classList.add("has-video");
+    if (lead) lead.textContent = "یک مکث کوتاه با فضای واقعی گاف.";
+    const play = () => {
+      const p = el.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    if (el.readyState >= 2) play();
+    else el.addEventListener("loadeddata", play, { once: true });
+  }
+
   function applyHomeImages(data) {
     const hero = data && data.hero;
+    const video = data && data.video;
     const gallery = (data && data.gallery) || [];
 
+    const homeHero = document.getElementById("homeHero");
     const heroPhoto = document.getElementById("homeHeroPhoto");
     const heroPlaceholder = document.getElementById("homeHeroPlaceholder");
     if (heroPhoto && hero && hero.path) {
       heroPhoto.src = "/" + String(hero.path).replace(/^\//, "");
       heroPhoto.hidden = false;
       if (heroPlaceholder) heroPlaceholder.hidden = true;
+      if (homeHero) homeHero.classList.add("has-photo");
     }
 
+    applyHomeFilm(video);
     renderGallery(gallery);
   }
 

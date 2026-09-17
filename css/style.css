@@ -1928,15 +1928,31 @@ a.footer-link:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 35%;
   display: block;
+  transform: scale(1.04);
+  transition: transform 8s ease-out;
+}
+
+.home-hero.has-photo .home-hero-photo {
+  animation: homeHeroDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes homeHeroDrift {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to { transform: scale(1.1) translate3d(-1.5%, -1%, 0); }
 }
 
 .home-hero-wash {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(26, 34, 24, 0.2) 0%, rgba(26, 34, 24, 0.45) 40%, rgba(18, 24, 16, 0.92) 100%);
+    linear-gradient(180deg, rgba(26, 34, 24, 0.18) 0%, rgba(26, 34, 24, 0.42) 38%, rgba(14, 18, 12, 0.94) 100%);
+}
+
+.home-hero.has-photo .home-hero-wash {
+  background:
+    linear-gradient(180deg, rgba(14, 18, 12, 0.28) 0%, rgba(14, 18, 12, 0.5) 42%, rgba(10, 14, 9, 0.92) 100%);
 }
 
 .home-hero-grain {
@@ -1951,7 +1967,7 @@ a.footer-link:hover {
 .home-hero-content {
   position: relative;
   z-index: 1;
-  padding: 2.25rem 1.2rem calc(1.5rem + env(safe-area-inset-bottom));
+  padding: 2.25rem 1.2rem calc(1.65rem + env(safe-area-inset-bottom));
   max-width: 440px;
   margin: 0 auto;
   text-align: center;
@@ -1982,7 +1998,7 @@ a.footer-link:hover {
 .home-brand-mark {
   margin: 0 0 0.15rem;
   font-family: var(--font-brand);
-  font-size: clamp(2.4rem, 11vw, 3.4rem);
+  font-size: clamp(2.6rem, 12vw, 3.6rem);
   font-weight: 700;
   letter-spacing: 0.28em;
   line-height: 1;
@@ -1999,8 +2015,8 @@ a.footer-link:hover {
 }
 
 .home-slogan {
-  margin: 0 0 0.45rem;
-  font-size: clamp(0.98rem, 3.8vw, 1.12rem);
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.05rem, 4vw, 1.22rem);
   font-weight: 700;
   line-height: 1.75;
   color: var(--cream);
@@ -2008,10 +2024,10 @@ a.footer-link:hover {
 
 .home-hero-text {
   margin: 0 auto 1.35rem;
-  max-width: 22ch;
+  max-width: 24ch;
   font-family: var(--font-brand);
   font-style: italic;
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   line-height: 1.7;
   color: rgba(242, 245, 235, 0.78);
 }
@@ -2170,6 +2186,73 @@ a.footer-link:hover {
 .home-gallery {
   padding: 2.5rem 0 1.75rem;
   background: rgba(242, 245, 235, 0.4);
+}
+
+.home-film {
+  padding: 2.75rem 1.1rem 2rem;
+  background:
+    linear-gradient(180deg, rgba(26, 34, 24, 0.04), transparent 40%),
+    rgba(242, 245, 235, 0.55);
+}
+
+.home-film-stage {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(42, 53, 38, 0.22);
+  background: #1a2218;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(26, 34, 24, 0.14);
+}
+
+.home-film-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  padding: 1.5rem;
+  color: rgba(242, 245, 235, 0.78);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(143, 163, 122, 0.28), transparent 60%),
+    linear-gradient(160deg, #3d4a38, #1a2218 70%);
+}
+
+.home-film-mark {
+  font-family: var(--font-brand);
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  color: var(--cream);
+}
+
+.home-film-placeholder p {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.home-film-placeholder small {
+  font-size: 0.75rem;
+  color: rgba(242, 245, 235, 0.55);
+  font-weight: 600;
+}
+
+.home-film-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #1a2218;
+}
+
+.home-film-stage.has-video .home-film-placeholder {
+  display: none;
 }
 
 .home-gallery-viewport {

@@ -41,6 +41,7 @@ const {
   saveSticker,
   restoreStickersToDisk,
   HOME_HERO_SLOT,
+  HOME_VIDEO_SLOT,
   isValidHomeSlot,
   isGallerySlot,
   newGallerySlot,
@@ -68,12 +69,15 @@ const {
 const app = express();
 const root = __dirname;
 
-app.use(express.json({ limit: "3mb" }));
+app.use(express.json({ limit: "12mb" }));
 
 const ICONS_DIR = path.join(__dirname, "img", "icons");
 const HOME_IMG_DIR = path.join(__dirname, "img", "home");
 const ALLOWED_STICKER_EXT = new Set([".svg", ".png", ".webp", ".jpg", ".jpeg"]);
 const ALLOWED_HOME_EXT = new Set([".png", ".webp", ".jpg", ".jpeg"]);
+const ALLOWED_HOME_VIDEO_EXT = new Set([".mp4", ".webm"]);
+const HOME_IMAGE_MAX_BYTES = 2.6 * 1024 * 1024;
+const HOME_VIDEO_MAX_BYTES = 10 * 1024 * 1024;
 
 function listStickers() {
   if (!fs.existsSync(ICONS_DIR)) return [];
@@ -447,8 +451,8 @@ app.post("/api/admin/stickers", requireAdmin, async (req, res) => {
 app.get("/api/home-images", async (_req, res) => {
   try {
     const images = await listHomeImages();
-    const { hero, gallery } = partitionHomeImages(images);
-    res.json({ ok: true, hero, gallery, images });
+    const { hero, video, gallery } = partitionHomeImages(images);
+    res.json({ ok: true, hero, video, gallery, images });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -457,8 +461,8 @@ app.get("/api/home-images", async (_req, res) => {
 app.get("/api/admin/home-images", requireAdmin, async (_req, res) => {
   try {
     const images = await listHomeImages();
-    const { hero, gallery } = partitionHomeImages(images);
-    res.json({ ok: true, hero, gallery, images });
+    const { hero, video, gallery } = partitionHomeImages(images);
+    res.json({ ok: true, hero, video, gallery, images });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -469,30 +473,43 @@ app.post("/api/admin/home-images", requireAdmin, async (req, res) => {
     let slot = String((req.body && req.body.slot) || "").trim();
     const kind = String((req.body && req.body.kind) || "").trim().toLowerCase();
 
-    if (!slot || slot === "new" || slot === "gallery") {
+    if (kind === "video" || slot === HOME_VIDEO_SLOT) {
+      slot = HOME_VIDEO_SLOT;
+    } else if (!slot || slot === "new" || slot === "gallery") {
       slot = newGallerySlot();
     } else if (kind === "gallery" && !isGallerySlot(slot) && slot !== HOME_HERO_SLOT) {
       slot = newGallerySlot();
     }
 
-    if (slot !== HOME_HERO_SLOT && !isGallerySlot(slot)) {
-      return res.status(400).json({ ok: false, error: "جایگاه عکس نامعتبر است" });
-    }
     if (!isValidHomeSlot(slot)) {
-      return res.status(400).json({ ok: false, error: "جایگاه عکس نامعتبر است" });
+      return res.status(400).json({ ok: false, error: "جایگاه رسانه نامعتبر است" });
     }
 
     const nameRaw = String((req.body && req.body.name) || slot).trim();
     const caption = String((req.body && req.body.caption) || "").trim().slice(0, 80);
     const dataUrl = String((req.body && req.body.data) || "");
-    const match = /^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i.exec(dataUrl);
+    const isVideo = slot === HOME_VIDEO_SLOT;
+
+    const match = isVideo
+      ? /^data:video\/(mp4|webm);base64,(.+)$/i.exec(dataUrl)
+      : /^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i.exec(dataUrl);
+
     if (!match) {
-      return res.status(400).json({ ok: false, error: "فایل عکس نامعتبر است (PNG، JPG یا WebP)" });
+      return res.status(400).json({
+        ok: false,
+        error: isVideo
+          ? "فایل ویدیو نامعتبر است (MP4 یا WebM)"
+          : "فایل عکس نامعتبر است (PNG، JPG یا WebP)",
+      });
     }
 
     let ext = match[1].toLowerCase();
     if (ext === "jpeg") ext = "jpg";
-    if (!ALLOWED_HOME_EXT.has("." + ext)) {
+
+    if (isVideo && !ALLOWED_HOME_VIDEO_EXT.has("." + ext)) {
+      return res.status(400).json({ ok: false, error: "فرمت ویدیو پشتیبانی نمی‌شود" });
+    }
+    if (!isVideo && !ALLOWED_HOME_EXT.has("." + ext)) {
       return res.status(400).json({ ok: false, error: "فرمت عکس پشتیبانی نمی‌شود" });
     }
 
@@ -500,6 +517,8 @@ app.post("/api/admin/home-images", requireAdmin, async (req, res) => {
       png: "image/png",
       jpg: "image/jpeg",
       webp: "image/webp",
+      mp4: "video/mp4",
+      webm: "video/webm",
     };
 
     const safeBase =
@@ -512,8 +531,14 @@ app.post("/api/admin/home-images", requireAdmin, async (req, res) => {
         .slice(0, 40) || slot;
 
     const buffer = Buffer.from(match[2], "base64");
-    if (buffer.length > 2.6 * 1024 * 1024) {
-      return res.status(400).json({ ok: false, error: "حجم عکس حداکثر ۲٫۵ مگابایت باشد" });
+    const maxBytes = isVideo ? HOME_VIDEO_MAX_BYTES : HOME_IMAGE_MAX_BYTES;
+    if (buffer.length > maxBytes) {
+      return res.status(400).json({
+        ok: false,
+        error: isVideo
+          ? "حجم ویدیو حداکثر ۱۰ مگابایت باشد"
+          : "حجم عکس حداکثر ۲٫۵ مگابایت باشد",
+      });
     }
 
     fs.mkdirSync(HOME_IMG_DIR, { recursive: true });
@@ -531,7 +556,7 @@ app.post("/api/admin/home-images", requireAdmin, async (req, res) => {
       path: "img/home/" + file,
       caption,
       mime: mimeMap[ext],
-      kind: slot === HOME_HERO_SLOT ? "hero" : "gallery",
+      kind: isVideo ? "video" : slot === HOME_HERO_SLOT ? "hero" : "gallery",
     };
 
     res.json({ ok: true, image });
